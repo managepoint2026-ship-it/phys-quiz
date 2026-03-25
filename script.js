@@ -289,55 +289,11 @@ function setupTopView() {
     setTimeout(updateLevelDisplay, 500);
     setTimeout(scaleLayout, 150);
 
-    // --- Debug: Inspect Storage Button ---
-    // Remove if exists
+    // デバッグボタンは非表示（開発完了）
     const oldDebug = document.getElementById('debug-storage-btn');
     if (oldDebug) oldDebug.remove();
-
-    const footer = document.querySelector('footer');
-    if (footer) {
-        // --- Storage Check Button ---
-        if (!document.getElementById('debug-storage-btn')) {
-            const dBtn = document.createElement('button');
-            dBtn.id = 'debug-storage-btn';
-            dBtn.textContent = '🛠 ストレージ確認';
-            dBtn.style.fontSize = '0.7em';
-            dBtn.style.marginTop = '10px';
-            dBtn.className = 'text-btn';
-            dBtn.onclick = () => {
-                const raw = localStorage.getItem('phy_quiz_user_stats');
-                alert(`【保存データ】\n${raw}`);
-                console.log(JSON.parse(raw));
-            };
-            footer.appendChild(dBtn);
-        }
-
-        // --- Test Write Button ---
-        if (!document.getElementById('debug-test-save-btn')) {
-            const tBtn = document.createElement('button');
-            tBtn.id = 'debug-test-save-btn';
-            tBtn.textContent = '💾 テスト保存';
-            tBtn.style.fontSize = '0.7em';
-            tBtn.style.marginTop = '10px';
-            tBtn.style.marginLeft = '10px';
-            tBtn.className = 'text-btn';
-            tBtn.onclick = () => {
-                try {
-                    localStorage.setItem('phy_quiz_test', 'test_ok_' + Date.now());
-                    const val = localStorage.getItem('phy_quiz_test');
-                    if (val && val.startsWith('test_ok')) {
-                        alert('ストレージ書き込みテスト: 成功\n値: ' + val + '\nブラウザの保存機能は正常です。');
-                    } else {
-                        alert('ストレージ書き込みテスト: 失敗 (読み出し値不一致)');
-                    }
-                } catch (e) {
-                    alert('ストレージ書き込みテスト: エラー発生\n' + e.message);
-                }
-            };
-            footer.appendChild(tBtn);
-        }
-    }
-    // ------------------------------------
+    const oldTest = document.getElementById('debug-test-save-btn');
+    if (oldTest) oldTest.remove();
 
     // --- Bonus Timer Loop ---
     const bonusContainer = document.getElementById('bonus-timer-area');
@@ -1292,28 +1248,30 @@ async function prepareQuiz(category, difficulty) {
         // Create a pool of valid candidates
         const candidates = shuffleArray(filteredQuestions);
 
-        // Select 5 questions with unique classification
+        // 分類ユニークを優先しつつ5問選択
         const questions = [];
         const usedClassifications = new Set();
 
         for (const q of candidates) {
             if (questions.length >= 5) break;
-
-            // If classification is present, ensure uniqueness
             if (q.classification) {
-                if (usedClassifications.has(q.classification)) {
-                    continue; // Skip duplicate classification
-                }
+                if (usedClassifications.has(q.classification)) continue;
                 usedClassifications.add(q.classification);
             }
             questions.push(q);
         }
 
-        // If we have fewer than 5 (and there are candidates left that were skipped), 
-        // fallback to fill up to 5? 
-        // User said "Ensure different numbers". 
-        // If filtering results in < 5 questions, the current behavior is just to show fewer questions or what?
-        // Let's just use what we have.
+        // 5問に満たない場合、分類重複を許して残りを補充
+        if (questions.length < 5) {
+            const usedIds = new Set(questions.map(q => q.id));
+            for (const q of candidates) {
+                if (questions.length >= 5) break;
+                if (!usedIds.has(q.id)) {
+                    questions.push(q);
+                    usedIds.add(q.id);
+                }
+            }
+        }
 
         startQuiz(questions, difficulty, category);
 
