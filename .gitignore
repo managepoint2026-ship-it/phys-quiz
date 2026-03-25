@@ -1,0 +1,13 @@
+# 開発用・不要ファイル
+画像データ①/
+_archive/
+プロンプト.txt
+manual_question_creation.md
+*.pptx
+*.url
+*.md
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+desktop.ini

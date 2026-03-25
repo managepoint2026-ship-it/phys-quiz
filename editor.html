@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理クイズ - 問題エディター</title>
+    <link rel="stylesheet" href="editor.css">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+
+<body>
+    <div class="editor-container">
+        <!-- Sidebar: File and Question List -->
+        <aside class="sidebar">
+            <header class="sidebar-header">
+                <h2>問題データ一覧</h2>
+                <select id="part-selector">
+                    <option value="">パートを選択してください</option>
+                    <option value="p0">第0編 物理のための数学 (p0)</option>
+                    <option value="p1">第1編 力と運動 (p1)</option>
+                    <option value="p2">第2編 熱と気体 (p2)</option>
+                    <option value="p3">第3編 波 (p3)</option>
+                    <option value="p4">第4編 電気と磁気 (p4)</option>
+                    <option value="p5">第5編 原子 (p5)</option>
+                </select>
+                <select id="category-filter" disabled>
+                    <option value="all">全てのカテゴリー</option>
+                </select>
+                <select id="difficulty-filter" disabled>
+                    <option value="all">全ての難易度</option>
+                    <option value="A">難易度 A</option>
+                    <option value="B">難易度 B</option>
+                    <option value="C">難易度 C</option>
+                </select>
+                <div class="sidebar-actions">
+                    <button id="add-q-btn" class="sub-btn" disabled>+ 新規問題追加</button>
+                    <button id="export-js-btn" class="primary-btn" disabled>JSコードを書き出す</button>
+                </div>
+            </header>
+            <div id="q-list" class="q-list">
+                <p class="empty-msg">パートを選択すると問題が表示されます</p>
+            </div>
+        </aside>
+
+        <!-- Main: Editing Form -->
+        <main class="editor-main">
+            <header class="main-header">
+                <h2 id="editing-title">問題を編集</h2>
+                <button id="delete-q-btn" class="delete-btn hidden">問題を削除</button>
+            </header>
+
+            <form id="edit-form" class="edit-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="q-id">問題ID</label>
+                        <input type="number" id="q-id">
+                    </div>
+                    <div class="form-group">
+                        <label for="q-difficulty">難易度</label>
+                        <select id="q-difficulty">
+                            <option value="A">A (基礎)</option>
+                            <option value="B">B (標準)</option>
+                            <option value="C">C (応用)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="c-type-group" style="display:none;">
+                        <label for="q-c-mode">C形式</label>
+                        <select id="q-c-mode">
+                            <option value="normal">通常形式</option>
+                            <option value="big">小問形式 (大問)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="q-type">出題形式</label>
+                        <select id="q-type">
+                            <option value="choice">4択問題</option>
+                            <option value="ox">〇×問題</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="q-category">カテゴリーID (Chapter ID)</label>
+                    <input type="text" id="q-category" placeholder="例: p1_c1">
+                </div>
+
+                <div class="form-group">
+                    <label for="q-text">問題文 (LaTeX可: $v$ など)</label>
+                    <textarea id="q-text" rows="4" placeholder="数式は $ $ で囲んで記述。JSエスケープは自動で行われます。"></textarea>
+                </div>
+
+                <div class="form-group" id="options-group">
+                    <label>選択肢</label>
+                    <div class="options-inputs">
+                        <input type="text" class="opt-input" data-index="0" placeholder="選択肢1">
+                        <input type="text" class="opt-input" data-index="1" placeholder="選択肢2">
+                        <input type="text" class="opt-input" data-index="2" placeholder="選択肢3">
+                        <input type="text" class="opt-input" data-index="3" placeholder="選択肢4">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="q-answer">正解 (0-3のインデックス)</label>
+                        <input type="number" id="q-answer" min="0" max="3" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="q-image">画像URL (任意)</label>
+                        <input type="text" id="q-image" placeholder="例: data/images/q1.png">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="q-explanation">解説文</label>
+                    <textarea id="q-explanation" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="q-classification">分類タグ (任意)</label>
+                    <input type="text" id="q-classification" placeholder="例: 等加速度直線運動">
+                    <small>※重複出題防止に使用されます</small>
+                </div>
+
+                <!-- Sub-Questions Area (Difficulty C only) -->
+                <div id="sub-questions-section" class="sub-questions-section hidden">
+                    <div class="section-header">
+                        <h3>小問リスト (1大問1ポイント・全問正解1.5倍)</h3>
+                        <button type="button" id="add-sub-q-btn" class="sub-btn">+ 小問を追加</button>
+                    </div>
+                    <div id="sub-questions-list" class="sub-questions-list">
+                        <!-- Dynamic sub-question blocks go here -->
+                    </div>
+                </div>
+            </form>
+        </main>
+
+        <!-- Right: Preview -->
+        <section class="editor-preview">
+            <header class="preview-header">
+                <h2>プレビュー</h2>
+                <div class="preview-mode-toggle">
+                    <button class="toggle-btn active" data-mode="q">問題画面</button>
+                    <button class="toggle-btn" data-mode="a">回答・解説画面</button>
+                </div>
+            </header>
+
+            <div id="preview-area" class="preview-area">
+                <!-- Chalkboard Mock -->
+                <div id="preview-q-view" class="preview-mock quiz-display">
+                    <div class="mock-blackboard">
+                        <p id="prev-question-text" class="mock-q-text"></p>
+                    </div>
+                    <div id="prev-image-container" class="mock-image-container hidden">
+                        <img id="prev-question-image" src="" alt="">
+                    </div>
+                    <div id="prev-options-container" class="mock-options-grid"></div>
+                </div>
+
+                <!-- Feedback Mock -->
+                <div id="preview-a-view" class="preview-mock feedback-display hidden">
+                    <div class="mock-feedback-content">
+                        <p id="prev-feedback-msg" class="mock-fb-msg"><img src="images/seikai_p1.png" style="height:40px;"> 正解！
+                            (+10 Pt)</p>
+                        <p id="prev-feedback-answer" class="mock-fb-ans">答え．選択肢テキスト</p>
+                        <p id="prev-explanation-text" class="mock-fb-exp"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Export Overlay -->
+    <div id="export-overlay" class="overlay hidden">
+        <div class="overlay-content">
+            <h3>JSコード書き出し</h3>
+            <p>以下の内容をコピーして、対応する `data/pX.js` ファイルの全文を上書きしてください。</p>
+            <textarea id="export-textarea" readonly></textarea>
+            <div class="overlay-actions">
+                <button id="copy-btn" class="primary-btn">クリップボードにコピー</button>
+                <button id="close-export-btn" class="sub-btn">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="categories.js"></script>
+    <script src="editor.js"></script>
+</body>
+
+</html>

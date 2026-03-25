@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>問題レビューツール</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    <script src="categories.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: #fff;
+            padding: 8px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .header-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 6px;
+        }
+        .header-controls select, .header-controls input {
+            padding: 4px 6px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            flex-shrink: 0;
+        }
+        .header-controls select { background: #fff; }
+        .header-controls input[type="text"] {
+            background: rgba(255,255,255,0.9);
+            flex: 1;
+            min-width: 80px;
+        }
+        .stats-bar {
+            display: flex;
+            gap: 10px;
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-left: auto;
+        }
+        .stats-bar span { background: rgba(255,255,255,0.15); padding: 1px 8px; border-radius: 10px; }
+
+        /* ファイル選択タブ */
+        .file-selector {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .file-tab {
+            padding: 4px 10px;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 6px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .file-tab:hover { background: rgba(255,255,255,0.15); }
+        .file-tab.active {
+            background: #fff;
+            color: #1a237e;
+            border-color: #fff;
+            font-weight: bold;
+        }
+        .file-tab .count { font-size: 0.7rem; opacity: 0.8; }
+
+        /* メインコンテンツ */
+        .main { max-width: 900px; margin: 0 auto; padding: 20px; padding-bottom: 80px; }
+
+        /* カード */
+        .q-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 5px solid #ccc;
+            transition: box-shadow 0.2s;
+        }
+        .q-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+        .q-card.diff-A { border-left-color: #4CAF50; }
+        .q-card.diff-B { border-left-color: #FF9800; }
+        .q-card.diff-C { border-left-color: #f44336; }
+        .q-card.edited { background: #fffde7; }
+        .q-card.marked-delete { opacity: 0.5; border-left-color: #999; background: #fafafa; }
+
+        /* カードヘッダー */
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .q-meta {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .badge-id { background: #e3f2fd; color: #1565c0; }
+        .badge-diff-A { background: #e8f5e9; color: #2e7d32; }
+        .badge-diff-B { background: #fff3e0; color: #e65100; }
+        .badge-diff-C { background: #ffebee; color: #c62828; }
+        .badge-type { background: #f3e5f5; color: #7b1fa2; }
+        .badge-section { background: #e0f7fa; color: #00695c; }
+        .badge-cat { background: #fce4ec; color: #880e4f; font-size: 0.7rem; }
+
+        .q-actions { display: flex; gap: 6px; }
+        .q-actions button {
+            padding: 4px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .btn-edit { color: #1565c0; }
+        .btn-edit:hover { background: #e3f2fd; }
+        .btn-delete { color: #c62828; }
+        .btn-delete:hover { background: #ffebee; }
+        .btn-restore { color: #2e7d32; }
+        .btn-restore:hover { background: #e8f5e9; }
+
+        /* 問題文プレビュー */
+        .q-body { margin-bottom: 12px; }
+        .q-question {
+            font-size: 1.05rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        .q-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        .q-option {
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .q-option.correct {
+            background: #e8f5e9;
+            border: 2px solid #4CAF50;
+            font-weight: bold;
+        }
+        .q-explanation {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff8e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .q-explanation::before { content: "解説: "; font-weight: bold; color: #f57f17; }
+
+        /* 編集モード */
+        .edit-form { display: none; }
+        .q-card.editing .q-body { display: none; }
+        .q-card.editing .edit-form { display: block; }
+
+        .edit-form label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #666;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+        .edit-form textarea, .edit-form input[type="text"], .edit-form select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .edit-form textarea { min-height: 60px; resize: vertical; }
+        .edit-form .option-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .edit-form .option-row input[type="text"] { flex: 1; }
+        .edit-form .option-row input[type="radio"] { margin: 0; }
+        .edit-form .option-row label.radio-label {
+            display: inline; margin: 0; font-size: 0.85rem; color: #333; font-weight: normal;
+        }
+        .edit-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        .edit-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+        }
+        .btn-save {
+            padding: 8px 20px;
+            background: #1a237e;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-save:hover { background: #283593; }
+        .btn-cancel {
+            padding: 8px 20px;
+            background: #eee;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-cancel:hover { background: #ddd; }
+        .btn-preview-edit {
+            padding: 8px 20px;
+            background: #e3f2fd;
+            color: #1565c0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* エクスポートバー */
+        .export-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 2px solid #1a237e;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .export-bar .change-count { font-size: 0.9rem; color: #666; }
+        .export-bar .change-count strong { color: #c62828; }
+        .export-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-export {
+            padding: 8px 18px;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .btn-export:hover { opacity: 0.9; }
+        .btn-export:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-export-summary { background: linear-gradient(135deg, #e65100, #f57c00); }
+        .btn-export-download { background: linear-gradient(135deg, #1a237e, #283593); }
+        .btn-export-download-all { background: linear-gradient(135deg, #1b5e20, #388e3c); }
+
+        /* モーダル */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: auto;
+        }
+        .modal h2 { margin-bottom: 12px; }
+        .modal pre {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            overflow: auto;
+            max-height: 50vh;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .modal-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            z-index: 300;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
+        @media (max-width: 600px) {
+            .q-options { grid-template-columns: 1fr; }
+            .edit-row { grid-template-columns: 1fr; }
+            .header-controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-row">
+        <div class="file-selector" id="file-tabs"></div>
+        <div class="stats-bar" id="stats-bar"></div>
+    </div>
+    <div class="header-controls">
+        <select id="filter-chapter">
+            <option value="all">全チャプター</option>
+        </select>
+        <select id="filter-section">
+            <option value="all">全セクション</option>
+        </select>
+        <select id="filter-diff">
+            <option value="all">全難易度</option>
+            <option value="A">A: 基礎</option>
+            <option value="B">B: 公式</option>
+            <option value="C">C: 応用</option>
+        </select>
+        <select id="filter-type">
+            <option value="all">全タイプ</option>
+            <option value="choice">選択式</option>
+            <option value="ox">○×式</option>
+        </select>
+        <input type="text" id="search-box" placeholder="検索...">
+    </div>
+</div>
+
+<div class="main" id="card-container"></div>
+
+<div class="export-bar">
+    <div class="change-count" id="change-count">変更なし</div>
+    <div class="export-buttons">
+        <button class="btn-export btn-export-summary" onclick="showChangeSummary()">変更一覧</button>
+        <button class="btn-export btn-export-download" onclick="exportFile()">このファイルを出力</button>
+        <button class="btn-export btn-export-download-all" onclick="exportAllFiles()">変更ファイルを一括出力</button>
+    </div>
+</div>
+
+<!-- トースト -->
+<div class="toast" id="toast"></div>
+
+<!-- モーダル -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h2 id="modal-title">エクスポート</h2>
+        <pre id="modal-content"></pre>
+        <div class="modal-actions">
+            <button class="btn-save" id="modal-copy" onclick="copyModalContent()">クリップボードにコピー</button>
+            <button class="btn-save" id="modal-download" onclick="downloadModalContent()">ファイルをダウンロード</button>
+            <button class="btn-cancel" onclick="document.getElementById('modal-overlay').classList.remove('show')">閉じる</button>
+        </div>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+// =============================================
+// 定数・データ管理
+// =============================================
+
+// ファイル名 → partId のマッピング
+var FILE_CONFIG = [
+    { file: 'p0.js', partId: 'part0', label: '第0編 数学' },
+    { file: 'p1.js', partId: 'part1', label: '第1編 力と運動' },
+    { file: 'p2.js', partId: 'part2', label: '第2編 熱と気体' },
+    { file: 'p3.js', partId: 'part3', label: '第3編 波' },
+    { file: 'p4.js', partId: 'part4', label: '第4編 電気と磁気' },
+    { file: 'p5.js', partId: 'part5', label: '第5編 原子' }
+];
+
+var FILES = {};          // { filename: { partId, label, original, current, deleted } }
+var activeFile = '';     // 現在選択中のファイル名
+var editedIds = {};      // { filename: Set of ids }
+var loadedParts = {};    // partId → data array（loadQuizData で受け取る）
+
+// categories.js から取得するチャプター名マップ
+var chapterNameMap = {};
+if (window.CATEGORIES) {
+    window.CATEGORIES.forEach(function(part) {
+        part.chapters.forEach(function(ch) {
+            chapterNameMap[ch.id] = ch.title;
+        });
+    });
+}
+
+// loadQuizData フック — 各 pX.js がこれを呼び出す
+window.loadQuizData = function(partId, data) {
+    loadedParts[partId] = data;
+};
+
+// =============================================
+// 初期化
+// =============================================
+function loadScript(src) {
+    return new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = src + '?t=' + Date.now(); // キャッシュ回避
+        s.onload = resolve;
+        s.onerror = function() {
+            console.warn(src + ' 読み込み失敗');
+            resolve(); // エラーでも続行
+        };
+        document.body.appendChild(s);
+    });
+}
+
+async function init() {
+    // 全ファイルを並列読み込み
+    await Promise.all(FILE_CONFIG.map(function(cfg) {
+        return loadScript('data/' + cfg.file);
+    }));
+
+    // デバッグ: 読み込み結果をコンソールに出力
+    console.log('=== loadedParts keys:', Object.keys(loadedParts));
+    FILE_CONFIG.forEach(function(cfg) {
+        var d = loadedParts[cfg.partId];
+        console.log(cfg.file, '→', cfg.partId, ':', d ? d.length + '問' : 'undefined');
+    });
+
+    // FILES に格納
+    FILE_CONFIG.forEach(function(cfg) {
+        var data = loadedParts[cfg.partId];
+        if (data && data.length > 0) {
+            try {
+                FILES[cfg.file] = {
+                    partId: cfg.partId,
+                    label: cfg.label,
+                    original: JSON.parse(JSON.stringify(data)),
+                    current: JSON.parse(JSON.stringify(data)),
+                    deleted: new Set()
+                };
+                editedIds[cfg.file] = new Set();
+            } catch(e) {
+                console.error(cfg.file + ' の処理中にエラー:', e);
+            }
+        }
+    });
+
+    // ファイルタブ生成
+    var tabContainer = document.getElementById('file-tabs');
+    var fileNames = Object.keys(FILES);
+    if (fileNames.length === 0) {
+        document.getElementById('card-container').innerHTML =
+            '<div class="empty-state">データファイルが見つかりません。<br>data/p0.js 〜 p5.js を配置してください。</div>';
+        return;
+    }
+
+    fileNames.forEach(function(name, i) {
+        var btn = document.createElement('button');
+        btn.className = 'file-tab' + (i === 0 ? ' active' : '');
+        btn.innerHTML = name + ' <span class="count">(' + FILES[name].current.length + ')</span>';
+        btn.dataset.file = name;
+        btn.title = FILES[name].label;
+        btn.onclick = function() { switchFile(name); };
+        tabContainer.appendChild(btn);
+    });
+
+    activeFile = fileNames[0];
+    buildChapterFilter();
+    renderAll();
+    setupEventListeners();
+}
+
+function switchFile(name) {
+    activeFile = name;
+    document.querySelectorAll('.file-tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.file === name);
+    });
+    // フィルタリセット
+    document.getElementById('filter-chapter').value = 'all';
+    document.getElementById('filter-section').value = 'all';
+    document.getElementById('filter-diff').value = 'all';
+    document.getElementById('filter-type').value = 'all';
+    document.getElementById('search-box').value = '';
+    buildChapterFilter();
+    renderAll();
+}
+
+// =============================================
+// フィルタ
+// =============================================
+function buildChapterFilter() {
+    var sel = document.getElementById('filter-chapter');
+    sel.innerHTML = '<option value="all">全チャプター</option>';
+    var data = FILES[activeFile].current;
+    var seen = {};
+    data.forEach(function(q) {
+        if (!seen[q.category]) {
+            seen[q.category] = true;
+            var opt = document.createElement('option');
+            opt.value = q.category;
+            opt.textContent = chapterNameMap[q.category] || q.category;
+            sel.appendChild(opt);
+        }
+    });
+    buildSectionFilter();
+}
+
+function buildSectionFilter() {
+    var sel = document.getElementById('filter-section');
+    sel.innerHTML = '<option value="all">全セクション</option>';
+    var data = FILES[activeFile].current;
+    var chap = document.getElementById('filter-chapter').value;
+    var seen = {};
+    data.forEach(function(q) {
+        if (chap !== 'all' && q.category !== chap) return;
+        var cls = q.classification || '';
+        if (cls && !seen[cls]) {
+            seen[cls] = true;
+            var opt = document.createElement('option');
+            opt.value = cls;
+            opt.textContent = cls;
+            sel.appendChild(opt);
+        }
+    });
+}
+
+function getFilteredQuestions() {
+    var data = FILES[activeFile].current;
+    var chap = document.getElementById('filter-chapter').value;
+    var section = document.getElementById('filter-section').value;
+    var diff = document.getElementById('filter-diff').value;
+    var type = document.getElementById('filter-type').value;
+    var keyword = document.getElementById('search-box').value.trim().toLowerCase();
+
+    return data.filter(function(q) {
+        if (chap !== 'all' && q.category !== chap) return false;
+        if (section !== 'all' && q.classification !== section) return false;
+        if (diff !== 'all' && q.difficulty !== diff) return false;
+        if (type !== 'all' && q.type !== type) return false;
+        if (keyword) {
+            var text = (q.question + ' ' + q.options.join(' ') + ' ' + (q.explanation || '') + ' ' + (q.classification || '')).toLowerCase();
+            if (text.indexOf(keyword) === -1) return false;
+        }
+        return true;
+    });
+}
+
+// =============================================
+// レンダリング
+// =============================================
+function renderAll() {
+    var questions = getFilteredQuestions();
+    var container = document.getElementById('card-container');
+    var deleted = FILES[activeFile].deleted;
+    var edited = editedIds[activeFile];
+
+    if (questions.length === 0) {
+        container.innerHTML = '<div class="empty-state">該当する問題がありません</div>';
+        updateStats(0, 0, 0, 0);
+        return;
+    }
+
+    var html = '';
+    var countA = 0, countB = 0, countC = 0;
+    questions.forEach(function(q) {
+        var isDeleted = deleted.has(q.id);
+        var isEdited = edited.has(q.id);
+        var cardClass = 'q-card diff-' + q.difficulty;
+        if (isEdited) cardClass += ' edited';
+        if (isDeleted) cardClass += ' marked-delete';
+
+        html += '<div class="' + cardClass + '" data-id="' + q.id + '">';
+        html += renderCardHeader(q, isDeleted);
+        html += renderCardBody(q);
+        html += renderEditForm(q);
+        html += '</div>';
+
+        if (!isDeleted) {
+            if (q.difficulty === 'A') countA++;
+            if (q.difficulty === 'B') countB++;
+            if (q.difficulty === 'C') countC++;
+        }
+    });
+
+    container.innerHTML = html;
+    renderMathInElement(container, {
+        delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+        ],
+        throwOnError: false
+    });
+
+    updateStats(questions.length, countA, countB, countC);
+    updateChangeCount();
+}
+
+function renderCardHeader(q, isDeleted) {
+    var diffLabel = { A: '基礎', B: '公式適用', C: '応用' };
+    var typeLabel = q.type === 'ox' ? '○×' : '選択式';
+    var h = '<div class="q-header"><div class="q-meta">';
+    h += '<span class="badge badge-id">ID: ' + q.id + '</span>';
+    h += '<span class="badge badge-diff-' + q.difficulty + '">' + q.difficulty + ': ' + diffLabel[q.difficulty] + '</span>';
+    h += '<span class="badge badge-type">' + typeLabel + '</span>';
+    if (q.category) h += '<span class="badge badge-cat">' + escapeHtml(chapterNameMap[q.category] || q.category) + '</span>';
+    if (q.classification) h += '<span class="badge badge-section">' + escapeHtml(q.classification) + '</span>';
+    h += '</div><div class="q-actions">';
+    if (isDeleted) {
+        h += '<button class="btn-restore" onclick="restoreQuestion(' + q.id + ')">復元</button>';
+    } else {
+        h += '<button class="btn-edit" onclick="toggleEdit(' + q.id + ')">編集</button>';
+        h += '<button class="btn-delete" onclick="deleteQuestion(' + q.id + ')">削除</button>';
+    }
+    h += '</div></div>';
+    return h;
+}
+
+function renderCardBody(q) {
+    var h = '<div class="q-body">';
+    if (q.common_text) {
+        h += '<div class="q-question"><em>' + escapeHtml(q.common_text) + '</em></div>';
+    }
+    h += '<div class="q-question">' + escapeHtml(q.question) + '</div>';
+    if (q.sub_questions && q.sub_questions.length > 0) {
+        // C問題: 小問形式
+        q.sub_questions.forEach(function(sq, idx) {
+            h += '<div style="margin:6px 0 2px;font-weight:bold;">小問' + (idx + 1) + ': ' + escapeHtml(sq.question) + '</div>';
+            h += '<div class="q-options">';
+            (sq.options || []).forEach(function(opt, i) {
+                var cls = i === sq.answer ? 'q-option correct' : 'q-option';
+                var mark = i === sq.answer ? '✓ ' : '';
+                h += '<div class="' + cls + '">' + mark + escapeHtml(opt) + '</div>';
+            });
+            h += '</div>';
+            if (sq.explanation) {
+                h += '<div class="q-explanation">' + escapeHtml(sq.explanation) + '</div>';
+            }
+        });
+    } else {
+        // 通常問題
+        h += '<div class="q-options">';
+        (q.options || []).forEach(function(opt, i) {
+            var cls = i === q.answer ? 'q-option correct' : 'q-option';
+            var mark = i === q.answer ? '✓ ' : '';
+            h += '<div class="' + cls + '">' + mark + escapeHtml(opt) + '</div>';
+        });
+        h += '</div>';
+        if (q.explanation) {
+            h += '<div class="q-explanation">' + escapeHtml(q.explanation) + '</div>';
+        }
+    }
+    h += '</div>';
+    return h;
+}
+
+function renderEditForm(q) {
+    var h = '<div class="edit-form">';
+
+    h += '<label>問題文（LaTeX可）</label>';
+    h += '<textarea class="ef-question">' + escapeHtml(q.question) + '</textarea>';
+
+    h += '<label>選択肢（正解にチェック）</label>';
+    if (q.sub_questions && q.sub_questions.length > 0) {
+        h += '<div style="color:#888;font-size:0.85em;">※ C問題（小問形式）は選択肢の直接編集に非対応です</div>';
+    } else {
+        (q.options || []).forEach(function(opt, i) {
+            h += '<div class="option-row">';
+            h += '<input type="radio" name="answer-' + q.id + '" value="' + i + '" ' + (i === q.answer ? 'checked' : '') + '>';
+            h += '<input type="text" class="ef-option" value="' + escapeAttr(opt) + '">';
+            h += '</div>';
+        });
+    }
+
+    h += '<label>解説</label>';
+    h += '<textarea class="ef-explanation">' + escapeHtml(q.explanation || '') + '</textarea>';
+
+    h += '<div class="edit-row">';
+    h += '<div><label>難易度</label><select class="ef-difficulty">';
+    ['A', 'B', 'C'].forEach(function(d) {
+        h += '<option value="' + d + '"' + (q.difficulty === d ? ' selected' : '') + '>' + d + '</option>';
+    });
+    h += '</select></div>';
+
+    h += '<div><label>タイプ</label><select class="ef-type">';
+    ['choice', 'ox'].forEach(function(t) {
+        var label = t === 'ox' ? '○×' : '選択式';
+        h += '<option value="' + t + '"' + (q.type === t ? ' selected' : '') + '>' + label + '</option>';
+    });
+    h += '</select></div>';
+
+    h += '<div><label>分類</label><input type="text" class="ef-classification" value="' + escapeAttr(q.classification || '') + '"></div>';
+    h += '</div>';
+
+    h += '<div class="edit-actions">';
+    h += '<button class="btn-save" onclick="saveEdit(' + q.id + ')">保存</button>';
+    h += '<button class="btn-preview-edit" onclick="previewEdit(' + q.id + ')">プレビュー</button>';
+    h += '<button class="btn-cancel" onclick="cancelEdit(' + q.id + ')">キャンセル</button>';
+    h += '</div>';
+    h += '</div>';
+    return h;
+}
+
+function updateStats(total, a, b, c) {
+    var deleted = FILES[activeFile].deleted.size;
+    var bar = document.getElementById('stats-bar');
+    bar.innerHTML =
+        '<span>' + FILES[activeFile].label + '</span>' +
+        '<span>表示: ' + total + '問</span>' +
+        '<span style="color:#a5d6a7;">A: ' + a + '</span>' +
+        '<span style="color:#ffcc80;">B: ' + b + '</span>' +
+        '<span style="color:#ef9a9a;">C: ' + c + '</span>' +
+        (deleted > 0 ? '<span style="color:#ff8a80;">削除: ' + deleted + '</span>' : '');
+}
+
+function updateChangeCount() {
+    var totalEdited = 0;
+    var totalDeleted = 0;
+    var changedFiles = [];
+    Object.keys(FILES).forEach(function(f) {
+        var ed = editedIds[f].size;
+        var del = FILES[f].deleted.size;
+        totalEdited += ed;
+        totalDeleted += del;
+        if (ed > 0 || del > 0) changedFiles.push(f);
+    });
+    var el = document.getElementById('change-count');
+    if (totalEdited === 0 && totalDeleted === 0) {
+        el.innerHTML = '変更なし';
+    } else {
+        var parts = [];
+        if (totalEdited > 0) parts.push('<strong>' + totalEdited + '件</strong>編集');
+        if (totalDeleted > 0) parts.push('<strong>' + totalDeleted + '件</strong>削除');
+        parts.push('（' + changedFiles.join(', ') + '）');
+        el.innerHTML = parts.join(' / ');
+    }
+}
+
+// =============================================
+// 編集操作
+// =============================================
+function toggleEdit(id) {
+    var card = document.querySelector('.q-card[data-id="' + id + '"]');
+    if (card) card.classList.toggle('editing');
+}
+
+function cancelEdit(id) {
+    var card = document.querySelector('.q-card[data-id="' + id + '"]');
+    if (card) card.classList.remove('editing');
+}
+
+function saveEdit(id) {
+    var card = document.querySelector('.q-card[data-id="' + id + '"]');
+    var data = FILES[activeFile].current;
+    var q = data.find(function(x) { return x.id === id; });
+    if (!q || !card) return;
+
+    q.question = card.querySelector('.ef-question').value;
+    q.explanation = card.querySelector('.ef-explanation').value;
+    q.difficulty = card.querySelector('.ef-difficulty').value;
+    q.type = card.querySelector('.ef-type').value;
+    q.classification = card.querySelector('.ef-classification').value;
+
+    var options = card.querySelectorAll('.ef-option');
+    q.options = Array.prototype.map.call(options, function(el) { return el.value; });
+
+    var radios = card.querySelectorAll('input[name="answer-' + id + '"]');
+    radios.forEach(function(r) { if (r.checked) q.answer = parseInt(r.value); });
+
+    editedIds[activeFile].add(id);
+    showToast('ID ' + id + ' を保存しました');
+    renderAll();
+}
+
+function previewEdit(id) {
+    saveEdit(id);
+}
+
+function deleteQuestion(id) {
+    FILES[activeFile].deleted.add(id);
+    renderAll();
+}
+
+function restoreQuestion(id) {
+    FILES[activeFile].deleted.delete(id);
+    renderAll();
+}
+
+// =============================================
+// エクスポート — .js ファイルをそのまま出力
+// =============================================
+
+// 1つのファイルの JS 出力テキストを生成
+function generateFileContent(filename) {
+    var file = FILES[filename];
+    var deleted = file.deleted;
+    var output = file.current.filter(function(q) { return !deleted.has(q.id); });
+
+    // window.loadQuizData("partX", [...]) 形式で出力
+    var json = JSON.stringify(output, null, 4);
+    return 'window.loadQuizData("' + file.partId + '",\n    ' +
+        json.replace(/\n/g, '\n    ') +
+        '\n);\n';
+}
+
+// 現在のファイルをダウンロード
+function exportFile() {
+    var content = generateFileContent(activeFile);
+
+    document.getElementById('modal-title').textContent = activeFile + ' のエクスポート';
+    document.getElementById('modal-content').textContent = content;
+    document.getElementById('modal-download').style.display = '';
+    document.getElementById('modal-copy').style.display = '';
+    document.getElementById('modal-overlay').classList.add('show');
+}
+
+// 変更のあるファイルを一括ダウンロード
+function exportAllFiles() {
+    var changedFiles = [];
+    Object.keys(FILES).forEach(function(f) {
+        if (editedIds[f].size > 0 || FILES[f].deleted.size > 0) {
+            changedFiles.push(f);
+        }
+    });
+
+    if (changedFiles.length === 0) {
+        // 変更なしでも現在のファイルだけ出力
+        changedFiles = [activeFile];
+    }
+
+    changedFiles.forEach(function(fname) {
+        var content = generateFileContent(fname);
+        downloadAsFile(fname, content);
+    });
+
+    showToast(changedFiles.length + '件のファイルをダウンロードしました: ' + changedFiles.join(', '));
+}
+
+function downloadAsFile(filename, content) {
+    var blob = new Blob([content], { type: 'application/javascript; charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// 変更一覧
+function showChangeSummary() {
+    var lines = [];
+    Object.keys(FILES).forEach(function(fname) {
+        var file = FILES[fname];
+        var edited = editedIds[fname];
+        var changes = [];
+
+        file.deleted.forEach(function(id) {
+            var q = file.original.find(function(x) { return x.id === id; });
+            if (q) changes.push('  [削除] ID ' + id + ': ' + q.question.substring(0, 40) + '...');
+        });
+
+        file.current.forEach(function(q) {
+            if (!edited.has(q.id)) return;
+            var orig = file.original.find(function(x) { return x.id === q.id; });
+            if (!orig) return;
+            var diffs = [];
+            if (orig.question !== q.question) diffs.push('問題文');
+            if (JSON.stringify(orig.options) !== JSON.stringify(q.options)) diffs.push('選択肢');
+            if (orig.answer !== q.answer) diffs.push('正解');
+            if (orig.explanation !== q.explanation) diffs.push('解説');
+            if (orig.difficulty !== q.difficulty) diffs.push('難易度 ' + orig.difficulty + '→' + q.difficulty);
+            if (orig.type !== q.type) diffs.push('タイプ');
+            if (orig.classification !== q.classification) diffs.push('分類');
+            if (diffs.length > 0) {
+                changes.push('  [編集] ID ' + q.id + ': ' + diffs.join(', '));
+            }
+        });
+
+        if (changes.length > 0) {
+            lines.push('■ ' + fname + '（' + file.label + '）');
+            lines = lines.concat(changes);
+            lines.push('');
+        }
+    });
+
+    if (lines.length === 0) lines.push('変更はありません。');
+
+    document.getElementById('modal-title').textContent = '変更一覧';
+    document.getElementById('modal-content').textContent = lines.join('\n');
+    document.getElementById('modal-download').style.display = 'none';
+    document.getElementById('modal-copy').style.display = '';
+    document.getElementById('modal-overlay').classList.add('show');
+}
+
+// モーダル操作
+function copyModalContent() {
+    var text = document.getElementById('modal-content').textContent;
+    navigator.clipboard.writeText(text).then(function() {
+        var btn = document.getElementById('modal-copy');
+        btn.textContent = 'コピーしました！';
+        setTimeout(function() { btn.textContent = 'クリップボードにコピー'; }, 2000);
+    });
+}
+
+function downloadModalContent() {
+    var text = document.getElementById('modal-content').textContent;
+    downloadAsFile(activeFile, text);
+}
+
+function closeModal(e) {
+    if (e.target === document.getElementById('modal-overlay')) {
+        document.getElementById('modal-overlay').classList.remove('show');
+    }
+}
+
+// =============================================
+// ユーティリティ
+// =============================================
+function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function escapeAttr(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function showToast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function() { el.classList.remove('show'); }, 2500);
+}
+
+function setupEventListeners() {
+    document.getElementById('filter-chapter').addEventListener('change', function() {
+        buildSectionFilter();
+        renderAll();
+    });
+    document.getElementById('filter-section').addEventListener('change', renderAll);
+    document.getElementById('filter-diff').addEventListener('change', renderAll);
+    document.getElementById('filter-type').addEventListener('change', renderAll);
+    var searchTimer;
+    document.getElementById('search-box').addEventListener('input', function() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(renderAll, 300);
+    });
+}
+
+// =============================================
+// 起動
+// =============================================
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理UI - トリビア＆バッジ</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --card: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --text: #eee;
+            --muted: #aaa;
+            --border: #333;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { text-align: center; margin-bottom: 20px; font-size: 1.5rem; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+        }
+        .tab-btn {
+            padding: 10px 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            color: var(--muted);
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            font-weight: bold;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .toolbar input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn-add {
+            background: var(--success);
+            color: #fff;
+        }
+        .btn-save {
+            background: var(--highlight);
+            color: #fff;
+        }
+        .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+        .btn-secondary {
+            background: var(--accent);
+            color: var(--text);
+        }
+        .btn:hover { opacity: 0.85; }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        .data-table th, .data-table td {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+        .data-table th {
+            background: var(--accent);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .data-table td { font-size: 0.85rem; }
+        .data-table tr:hover { background: rgba(233, 69, 96, 0.05); }
+
+        .data-table input, .data-table select, .data-table textarea {
+            width: 100%;
+            padding: 4px 6px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+        .data-table textarea { min-height: 60px; resize: vertical; }
+        .data-table .id-col { width: 70px; }
+        .data-table .icon-col { width: 50px; text-align: center; }
+        .data-table .cat-col { width: 100px; }
+        .data-table .rarity-col { width: 60px; }
+        .data-table .action-col { width: 60px; text-align: center; }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--highlight);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 2px 6px;
+        }
+        .delete-btn:hover { color: #ff8a9e; }
+
+        /* Rarity colors */
+        .rarity-N { color: #aaa; }
+        .rarity-R { color: #4fc3f7; }
+        .rarity-SR { color: #ffd740; font-weight: bold; }
+
+        /* Export area */
+        .export-area {
+            width: 100%;
+            min-height: 200px;
+            background: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+        }
+
+        /* Status */
+        .status-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: bold;
+            z-index: 100;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+        }
+        .status-bar.show { transform: translateY(0); }
+        .status-bar.success { background: var(--success); color: #fff; }
+        .status-bar.error { background: var(--highlight); color: #fff; }
+
+        /* Badge editor specifics */
+        .badge-check-info {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* Count */
+        .count-badge {
+            background: var(--accent);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .data-table { font-size: 0.75rem; }
+            .data-table th, .data-table td { padding: 4px 6px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>管理UI - トリビア＆バッジ</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('trivia')">トリビア<span id="trivia-count" class="count-badge">0</span></button>
+        <button class="tab-btn" onclick="switchTab('badge')">バッジ<span id="badge-count" class="count-badge">0</span></button>
+        <button class="tab-btn" onclick="switchTab('export')">エクスポート</button>
+    </div>
+
+    <!-- ===== トリビア タブ ===== -->
+    <div id="tab-trivia" class="tab-content active">
+        <div class="toolbar">
+            <input type="text" id="trivia-search" placeholder="検索 (タイトル / 内容 / カテゴリ)" oninput="filterTrivia()">
+            <button class="btn btn-add" onclick="addTrivia()">+ 追加</button>
+            <button class="btn btn-save" onclick="saveTrivia()">保存 (JS出力)</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="data-table" id="trivia-table">
+                <thead>
+                    <tr>
+                        <th class="id-col">ID</th>
+                        <th class="icon-col">Icon</th>
+                        <th class="cat-col">カテゴリ</th>
+                        <th class="rarity-col">レア度</th>
+                        <th style="width:150px;">タイトル</th>
+                        <th>内容</th>
+                        <th class="action-col">削除</th>
+                    </tr>
+                </thead>
+                <tbody id="trivia-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== バッジ タブ ===== -->
+    <div id="tab-badge" class="tab-content">
+        <div class="toolbar">
+            <input type="text" id="badge-search" placeholder="検索 (タイトル / 説明)" oninput="filterBadges()">
+            <button class="btn btn-add" onclick="addBadge()">+ 追加</button>
+            <button class="btn btn-save" onclick="saveBadges()">保存 (JS出力)</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="data-table" id="badge-table">
+                <thead>
+                    <tr>
+                        <th class="id-col">ID</th>
+                        <th class="icon-col">Icon</th>
+                        <th style="width:150px;">タイトル</th>
+                        <th>説明</th>
+                        <th style="width:180px;">条件関数</th>
+                        <th class="action-col">削除</th>
+                    </tr>
+                </thead>
+                <tbody id="badge-body"></tbody>
+            </table>
+        </div>
+        <p class="badge-check-info">※ 条件関数 (check) はJavaScriptコードです。引数は (stats, log, wrong) です。既存のバッジの条件を参考にしてください。</p>
+    </div>
+
+    <!-- ===== エクスポート タブ ===== -->
+    <div id="tab-export" class="tab-content">
+        <div class="toolbar">
+            <button class="btn btn-secondary" onclick="generateTriviaJS()">trivia.js を生成</button>
+            <button class="btn btn-secondary" onclick="generateBadgeJS()">badges.js を生成</button>
+            <button class="btn btn-save" onclick="copyExport()">クリップボードにコピー</button>
+        </div>
+        <textarea class="export-area" id="export-output" readonly placeholder="上のボタンを押すと生成されたJSコードがここに表示されます"></textarea>
+    </div>
+
+    <div class="status-bar" id="status-bar"></div>
+
+    <script src="data/trivia.js"></script>
+    <script src="data/badges.js"></script>
+    <script>
+    // === State ===
+    let triviaData = [];
+    let badgeData = [];
+
+    // === Init ===
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load trivia from global
+        if (typeof TRIVIA_CARDS !== 'undefined') {
+            triviaData = JSON.parse(JSON.stringify(TRIVIA_CARDS));
+        }
+        // Load badges (without check functions - store as strings)
+        if (typeof BADGES !== 'undefined') {
+            badgeData = BADGES.map(b => ({
+                id: b.id,
+                icon: b.icon,
+                title: b.title,
+                description: b.description,
+                checkStr: b.check.toString()
+            }));
+        }
+        renderTrivia();
+        renderBadges();
+        updateCounts();
+    });
+
+    // === Tab switching ===
+    function switchTab(name) {
+        document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+            const tabs = ['trivia', 'badge', 'export'];
+            btn.classList.toggle('active', tabs[i] === name);
+        });
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    function updateCounts() {
+        document.getElementById('trivia-count').textContent = triviaData.length;
+        document.getElementById('badge-count').textContent = badgeData.length;
+    }
+
+    // === Trivia rendering ===
+    const TRIVIA_CATEGORIES = ['scientist', 'nature', 'tech', 'space', 'history'];
+    const CAT_LABELS = { scientist: '科学者', nature: '自然現象', tech: 'テクノロジー', space: '宇宙', history: '歴史' };
+    const RARITIES = ['N', 'R', 'SR'];
+
+    function renderTrivia(filter = '') {
+        const tbody = document.getElementById('trivia-body');
+        tbody.innerHTML = '';
+        const lf = filter.toLowerCase();
+        triviaData.forEach((t, idx) => {
+            if (lf && !t.title.toLowerCase().includes(lf) && !t.body.toLowerCase().includes(lf) && !t.category.includes(lf)) return;
+            const tr = document.createElement('tr');
+            tr.dataset.idx = idx;
+            tr.innerHTML = `
+                <td><input type="text" value="${esc(t.id)}" onchange="triviaData[${idx}].id=this.value"></td>
+                <td class="icon-col"><input type="text" value="${esc(t.icon)}" style="text-align:center;font-size:1.2rem;" onchange="triviaData[${idx}].icon=this.value"></td>
+                <td><select onchange="triviaData[${idx}].category=this.value">
+                    ${TRIVIA_CATEGORIES.map(c => `<option value="${c}" ${t.category===c?'selected':''}>${CAT_LABELS[c]}</option>`).join('')}
+                </select></td>
+                <td><select onchange="triviaData[${idx}].rarity=this.value">
+                    ${RARITIES.map(r => `<option value="${r}" ${t.rarity===r?'selected':''}>${r}</option>`).join('')}
+                </select></td>
+                <td><input type="text" value="${esc(t.title)}" onchange="triviaData[${idx}].title=this.value"></td>
+                <td><textarea onchange="triviaData[${idx}].body=this.value">${esc(t.body)}</textarea></td>
+                <td class="action-col"><button class="delete-btn" onclick="deleteTrivia(${idx})" title="削除">✕</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function addTrivia() {
+        const nextNum = triviaData.length + 1;
+        const id = 't' + String(nextNum).padStart(3, '0');
+        triviaData.push({
+            id: id,
+            category: 'scientist',
+            rarity: 'N',
+            title: '新しいトリビア',
+            body: 'ここに内容を入力',
+            icon: '❓'
+        });
+        renderTrivia();
+        updateCounts();
+        // Scroll to bottom
+        const tbody = document.getElementById('trivia-body');
+        tbody.lastElementChild?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function deleteTrivia(idx) {
+        if (!confirm(`「${triviaData[idx].title}」を削除しますか？`)) return;
+        triviaData.splice(idx, 1);
+        renderTrivia();
+        updateCounts();
+    }
+
+    function filterTrivia() {
+        renderTrivia(document.getElementById('trivia-search').value);
+    }
+
+    // === Badge rendering ===
+    function renderBadges(filter = '') {
+        const tbody = document.getElementById('badge-body');
+        tbody.innerHTML = '';
+        const lf = filter.toLowerCase();
+        badgeData.forEach((b, idx) => {
+            if (lf && !b.title.toLowerCase().includes(lf) && !b.description.toLowerCase().includes(lf)) return;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" value="${esc(b.id)}" onchange="badgeData[${idx}].id=this.value"></td>
+                <td class="icon-col"><input type="text" value="${esc(b.icon)}" style="text-align:center;font-size:1.2rem;" onchange="badgeData[${idx}].icon=this.value"></td>
+                <td><input type="text" value="${esc(b.title)}" onchange="badgeData[${idx}].title=this.value"></td>
+                <td><input type="text" value="${esc(b.description)}" onchange="badgeData[${idx}].description=this.value"></td>
+                <td><textarea onchange="badgeData[${idx}].checkStr=this.value">${esc(b.checkStr)}</textarea></td>
+                <td class="action-col"><button class="delete-btn" onclick="deleteBadge(${idx})" title="削除">✕</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function addBadge() {
+        const nextNum = badgeData.length + 1;
+        const id = 'b' + String(nextNum).padStart(3, '0');
+        badgeData.push({
+            id: id,
+            icon: '🏅',
+            title: '新しいバッジ',
+            description: '条件の説明',
+            checkStr: '(stats) => false'
+        });
+        renderBadges();
+        updateCounts();
+        const tbody = document.getElementById('badge-body');
+        tbody.lastElementChild?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function deleteBadge(idx) {
+        if (!confirm(`「${badgeData[idx].title}」を削除しますか？`)) return;
+        badgeData.splice(idx, 1);
+        renderBadges();
+        updateCounts();
+    }
+
+    function filterBadges() {
+        renderBadges(document.getElementById('badge-search').value);
+    }
+
+    // === Export / Save ===
+    function generateTriviaJS() {
+        let js = `/**\n * 物理トリビアカード データ\n * 条件を満たすとランダムに1枚獲得できる\n *\n * category: "scientist" | "nature" | "tech" | "space" | "history"\n * rarity: "N" (普通) | "R" (レア) | "SR" (スーパーレア)\n */\nconst TRIVIA_CARDS = [\n`;
+
+        // Group by category
+        const grouped = {};
+        TRIVIA_CATEGORIES.forEach(c => grouped[c] = []);
+        triviaData.forEach(t => {
+            if (!grouped[t.category]) grouped[t.category] = [];
+            grouped[t.category].push(t);
+        });
+
+        const catComments = {
+            scientist: '科学者カード',
+            nature: '自然現象カード',
+            tech: 'テクノロジーカード',
+            space: '宇宙カード',
+            history: '歴史カード'
+        };
+
+        let first = true;
+        for (const cat of TRIVIA_CATEGORIES) {
+            if (grouped[cat].length === 0) continue;
+            if (!first) js += '\n';
+            js += `    // === ${catComments[cat]} ===\n`;
+            grouped[cat].forEach(t => {
+                js += `    {\n`;
+                js += `        id: "${esc(t.id)}", category: "${t.category}", rarity: "${t.rarity}",\n`;
+                js += `        title: "${esc(t.title)}",\n`;
+                js += `        body: "${esc(t.body)}",\n`;
+                js += `        icon: "${esc(t.icon)}"\n`;
+                js += `    },\n`;
+            });
+            first = false;
+        }
+
+        js += `];\n`;
+        document.getElementById('export-output').value = js;
+        switchTab('export');
+        showStatus('trivia.js のコードを生成しました', 'success');
+    }
+
+    function generateBadgeJS() {
+        let js = `/**\n * バッジ（実績）定義\n *\n * check: function(stats, log, wrong) => boolean\n *   stats: phy_quiz_user_stats から取得したオブジェクト\n *   log:   phy_quiz_log から取得したオブジェクト\n *   wrong: phy_quiz_wrong から取得したオブジェクト\n */\nconst BADGES = [\n`;
+
+        badgeData.forEach(b => {
+            js += `    {\n`;
+            js += `        id: "${esc(b.id)}",\n`;
+            js += `        icon: "${esc(b.icon)}",\n`;
+            js += `        title: "${esc(b.title)}",\n`;
+            js += `        description: "${esc(b.description)}",\n`;
+            js += `        check: ${b.checkStr}\n`;
+            js += `    },\n`;
+        });
+
+        js += `];\n\n`;
+        // Add helper functions
+        js += `// === バッジ用ヘルパー関数 ===\n`;
+        js += `function calcStreak(log) {\n    const today = new Date();\n    let streak = 0;\n    for (let i = 0; i < 90; i++) {\n        const d = new Date(today);\n        d.setDate(d.getDate() - i);\n        const key = String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');\n        if (log[key]) {\n            streak++;\n        } else {\n            if (i > 0) break;\n        }\n    }\n    return streak;\n}\n\n`;
+        js += `function maxPartLevel(stats) {\n    if (!stats.partPoints || typeof calculateLevel !== 'function') return 0;\n    let max = 0;\n    Object.values(stats.partPoints).forEach(pts => {\n        const lv = calculateLevel(pts);\n        if (lv > max) max = lv;\n    });\n    return max;\n}\n\n`;
+        js += `function totalSessions(log) {\n    let total = 0;\n    Object.values(log).forEach(entry => { total += entry.n; });\n    return total;\n}\n`;
+
+        document.getElementById('export-output').value = js;
+        switchTab('export');
+        showStatus('badges.js のコードを生成しました', 'success');
+    }
+
+    function saveTrivia() {
+        generateTriviaJS();
+    }
+
+    function saveBadges() {
+        generateBadgeJS();
+    }
+
+    async function copyExport() {
+        const text = document.getElementById('export-output').value;
+        if (!text) {
+            showStatus('先にコードを生成してください', 'error');
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(text);
+            showStatus('クリップボードにコピーしました', 'success');
+        } catch {
+            // Fallback
+            document.getElementById('export-output').select();
+            document.execCommand('copy');
+            showStatus('クリップボードにコピーしました', 'success');
+        }
+    }
+
+    // === Utils ===
+    function esc(str) {
+        return String(str).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+    }
+
+    function showStatus(msg, type) {
+        const bar = document.getElementById('status-bar');
+        bar.textContent = msg;
+        bar.className = 'status-bar show ' + type;
+        setTimeout(() => { bar.classList.remove('show'); }, 2500);
+    }
+    </script>
+</body>
+</html>

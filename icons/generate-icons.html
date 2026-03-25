@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html><head><title>Icon Generator</title></head>
+<body>
+<p>右クリックで画像を保存してください:</p>
+<canvas id="c192" width="192" height="192"></canvas>
+<canvas id="c512" width="512" height="512"></canvas>
+<script>
+function draw(canvas) {
+  const s = canvas.width;
+  const ctx = canvas.getContext('2d');
+  const r = s * 0.15;
+
+  // Background
+  ctx.beginPath();
+  ctx.roundRect(0, 0, s, s, r);
+  ctx.fillStyle = '#2d5a3d';
+  ctx.fill();
+
+  // Blackboard frame
+  const bx = s*0.12, by = s*0.15, bw = s*0.76, bh = s*0.55;
+  ctx.beginPath();
+  ctx.roundRect(bx, by, bw, bh, s*0.03);
+  ctx.fillStyle = '#3a5a3a';
+  ctx.strokeStyle = '#8b6f47';
+  ctx.lineWidth = s*0.02;
+  ctx.fill();
+  ctx.stroke();
+
+  // Blackboard inner
+  ctx.beginPath();
+  ctx.roundRect(bx+s*0.03, by+s*0.03, bw-s*0.06, bh-s*0.06, s*0.015);
+  ctx.fillStyle = '#2a4a2a';
+  ctx.fill();
+
+  // Text
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#e8e0d0';
+  ctx.font = `bold ${s*0.13}px sans-serif`;
+  ctx.fillText('物理', s*0.5, by + bh*0.45);
+  ctx.font = `${s*0.09}px sans-serif`;
+  ctx.fillStyle = '#c8d8c0';
+  ctx.fillText('クイズ', s*0.5, by + bh*0.75);
+
+  // Question mark circle
+  ctx.beginPath();
+  ctx.arc(s*0.5, s*0.82, s*0.08, 0, Math.PI*2);
+  ctx.fillStyle = '#ff9800';
+  ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.font = `bold ${s*0.09}px sans-serif`;
+  ctx.fillText('?', s*0.5, s*0.855);
+}
+draw(document.getElementById('c192'));
+draw(document.getElementById('c512'));
+
+// Auto download
+['c192','c512'].forEach(id => {
+  const c = document.getElementById(id);
+  const link = document.createElement('a');
+  link.download = `icon-${c.width}.png`;
+  link.href = c.toDataURL('image/png');
+  const img = document.createElement('img');
+  img.src = link.href;
+  img.style.border = '1px solid #ccc';
+  img.style.margin = '10px';
+  document.body.appendChild(img);
+  document.body.appendChild(link);
+  link.textContent = ` [${c.width}px DL]`;
+});
+</script>
+</body></html>

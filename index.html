@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理クイズ</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2d5a3d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="物理クイズ">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <link rel="stylesheet" href="style.css?v=10">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+</head>
+
+<body>
+    <!-- ログイン画面（認証前に表示） -->
+    <div id="login-view" class="login-overlay">
+        <div class="login-card">
+            <div class="login-icon">📚</div>
+            <h1 class="login-title">物理クイズ</h1>
+            <p class="login-subtitle">高校物理の学習アプリ</p>
+            <button id="google-login-btn" class="google-btn" onclick="signInWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="google-icon">
+                Googleアカウントでログイン
+            </button>
+            <p class="login-note">学校のGoogleアカウントでログインしてください</p>
+        </div>
+    </div>
+
+    <div class="container fade-in hidden" id="app-container">
+        <header>
+            <div id="quiz-header" class="hidden"></div>
+            <!-- ユーザー情報バー -->
+            <div id="user-bar" class="user-bar">
+                <span id="user-name-display"></span>
+                <button id="logout-btn" class="text-btn" onclick="signOutUser()">ログアウト</button>
+            </div>
+        </header>
+
+        <main>
+            <div id="game-stage">
+                <!-- TOP VIEW -->
+                <div id="top-view" class="card game-mode">
+                    <div id="bonus-timer-area" class="bonus-timer-area hidden"></div>
+
+                    <div class="game-layout">
+                        <!-- Background Layers -->
+                        <div class="blackboard-layer"></div>
+                        <div class="character-layer"></div>
+
+                        <!-- Speech Bubble -->
+                        <div id="rank-display" class="rank-badge">読込中...</div>
+                        <div id="speech-bubble" class="speech-bubble">
+                            <p id="character-message">大分野を選んでね</p>
+                        </div>
+
+                        <!-- Blackboard area -->
+                        <div id="blackboard-area" class="blackboard-area">
+
+                            <div id="selection-flow">
+                                <!-- Step 1: Part Selection -->
+                                <div class="selection-step" id="step-part">
+                                    <div id="part-container" class="button-grid">
+                                        <!-- Parts generated here -->
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Chapter & Difficulty Selection (Combined) -->
+                                <div id="step-combined" class="hidden fade-in">
+                                    <button id="back-to-parts-btn" class="text-btn back-btn">← 大分野選びに戻る</button>
+                                    <h3 id="selected-part-title-display"></h3>
+
+                                    <div class="combined-selection">
+                                        <div class="selection-step" id="step-chapter">
+
+                                            <div id="chapter-container" class="button-grid">
+                                                <!-- Chapters generated here -->
+                                            </div>
+                                        </div>
+
+                                        <div class="selection-step" id="step-difficulty">
+
+                                            <div class="difficulty-buttons horizontal">
+                                                <button class="diff-btn" data-diff="A" onclick="selectDifficulty('A')">
+                                                    <span class="diff-char">A</span>
+                                                    <span class="diff-desc">基礎・語彙</span>
+                                                </button>
+                                                <button class="diff-btn" data-diff="B" onclick="selectDifficulty('B')">
+                                                    <span class="diff-char">B</span>
+                                                    <span class="diff-desc">計算問題</span>
+                                                </button>
+                                                <button class="diff-btn" data-diff="C" onclick="selectDifficulty('C')">
+                                                    <span class="diff-char">C</span>
+                                                    <span class="diff-desc">思考力</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="start-action">
+                                        <button id="start-btn" class="primary-btn hidden" disabled>クイズを始める</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUIZ VIEW -->
+                <div id="quiz-view" class="quiz-full-view hidden">
+                    <!-- Fixed Lead Area for Big Questions (Difficulty C) -->
+                    <div id="fixed-lead-area" class="lead-chalkboard hidden">
+                        <div id="common-text-area" class="lead-text"></div>
+                        <div id="common-image-container" class="hidden" style="text-align: center; margin-top: 10px;">
+                            <img id="common-question-image" src="" alt="共通画像"
+                                style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <div id="question-area" style="position: relative;">
+                        <!-- Specific sub-question text -->
+                        <p id="question-text" class="question-text">問題を読み込んでいます...</p>
+                        <div class="q-counter-inline" id="q-counter">
+                            <span id="q-number">1</span> / 5
+                        </div>
+                    </div>
+
+                    <div id="image-container" class="hidden" style="text-align: center; margin-bottom: 20px;">
+                        <img id="question-image" src="" alt="問題画像"
+                            style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+                    </div>
+                    <div id="options-container" class="options-grid"></div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button id="check-btn" class="primary-btn hidden" disabled>チェック</button>
+                    </div>
+
+                    <div id="feedback-area" class="feedback-area"
+                        style="position: relative !important; display: none; width: 100%; background: white; padding: 40px 20px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); margin-top: 30px;">
+                        <p id="feedback-msg"></p>
+                        <p id="feedback-answer"
+                            style="font-weight: bold; font-size: 1.2rem; margin: 10px 0; color: #333;"></p>
+                        <!-- Summary for sub-questions -->
+                        <div id="sub-q-summary" class="sub-q-summary hidden"></div>
+                        <p id="explanation-text" style="font-weight: normal; margin-top: 10px;"></p>
+                        <button id="next-btn" class="primary-btn" style="margin-top: 20px;">次へ</button>
+                    </div>
+                    <div style="height: 100px;"></div>
+                </div>
+
+                <!-- RESULT VIEW (Broadcast Room) -->
+                <div id="result-view" class="card hidden"
+                    style="padding: 0; overflow: hidden; position: relative; min-height: 600px; width: 100%;">
+                    <!-- Background Image Layer -->
+                    <div id="result-bg-container"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+                        <img id="result-bg-img" src="images/housou_kumori.jpg"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+
+                    <!-- Overlay Content Layer -->
+                    <div id="result-content-layer"
+                        style="position: relative; z-index: 10; width: 100%; height: 100%; pointer-events: none;">
+
+                        <!-- Bubble A: Score Report -->
+                        <div class="result-bubble bubble-a">
+                            <h3 id="result-comment">成績レポート</h3>
+                            <div class="bubble-row row-score">
+                                <span>正答数:</span>
+                                <span class="highlight-val"><span id="final-score">0</span>/5</span>
+                            </div>
+                            <div class="bubble-row row-points">
+                                <span>獲得Pt:</span>
+                                <span class="highlight-val" id="earned-points">0 Pt</span>
+                            </div>
+                            <div class="bubble-row row-streak">
+                                <span>連続正解:</span>
+                                <span class="highlight-val" id="streak-display">0回</span>
+                            </div>
+                        </div>
+
+                        <!-- Bubble B: Level Info -->
+                        <div id="level-result-section" class="result-bubble bubble-b">
+                            <h3><span id="level-tag-result">Lv.0</span> <span id="part-name-result"
+                                    style="font-size: 0.8em;">分野名</span></h3>
+                            <div class="xp-bar-container small-bar">
+                                <div class="xp-bar-fill" id="xp-bar-fill"></div>
+                            </div>
+                            <p class="xp-text-small">あと <span id="next-xp">0</span> Pt でレベルアップ</p>
+                        </div>
+
+                        <!-- Bubble C: Bonus (Conditional) -->
+                        <div id="result-bubble-bonus" class="result-bubble bubble-c hidden">
+                            <h3>🔥 ボーナス中！</h3>
+                            <p id="bonus-msg-content">倍率 x1.0</p>
+                            <p class="expiry-text">有効期限: 24時間</p>
+                        </div>
+
+                        <!-- Special Messages -->
+                        <div id="special-messages" class="special-messages"></div>
+
+                        <!-- Action Buttons (Bottom) -->
+                        <div class="result-actions" style="pointer-events: auto;">
+                            <button id="retry-btn" class="primary-btn pulse-btn"
+                                style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); margin-bottom: 10px;">同じ分野をもう一度</button>
+                            <button id="back-to-top-btn" class="primary-btn pulse-btn"
+                                style="background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);">トップに戻る</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ノート型メニュー（左:ボタン4つ / 右:選択コンテンツ） -->
+            <div id="notebook-menu" class="notebook-frame">
+                <div class="notebook-inner">
+                    <img src="images/mihiraki.png" alt="" class="notebook-bg">
+                    <div class="notebook-content">
+                        <!-- 左ページ: メニューボタン4つ縦並び -->
+                        <div class="notebook-page notebook-left">
+                            <button class="notebook-btn" data-panel="review" onclick="selectNotebookPanel('review')">
+                                <span class="notebook-icon">📝</span>
+                                <span class="notebook-label">復習モード</span>
+                                <span id="review-count" class="notebook-badge hidden">0</span>
+                            </button>
+                            <button class="notebook-btn" data-panel="history" onclick="selectNotebookPanel('history')">
+                                <span class="notebook-icon">📊</span>
+                                <span class="notebook-label">学習履歴</span>
+                            </button>
+                            <button class="notebook-btn" data-panel="trivia" onclick="selectNotebookPanel('trivia')">
+                                <span class="notebook-icon">📚</span>
+                                <span class="notebook-label">トリビア</span>
+                                <span id="trivia-count-badge" class="notebook-badge-sm">0/30</span>
+                            </button>
+                            <button class="notebook-btn" data-panel="badge" onclick="selectNotebookPanel('badge')">
+                                <span class="notebook-icon">🏅</span>
+                                <span class="notebook-label">バッジ</span>
+                                <span id="badge-count-badge" class="notebook-badge-sm">0/20</span>
+                            </button>
+                        </div>
+                        <!-- 右ページ: 選択されたコンテンツ表示 -->
+                        <div class="notebook-page notebook-right">
+                            <!-- デフォルト表示 -->
+                            <div id="nb-panel-default" class="nb-panel">
+                                <p class="nb-welcome">左のメニューから<br>選んでね</p>
+                            </div>
+                            <!-- 復習モード -->
+                            <div id="nb-panel-review" class="nb-panel hidden">
+                                <h4 class="nb-title">復習モード</h4>
+                                <p class="nb-desc">間違えた問題を<br>もう一度解こう</p>
+                                <p id="nb-review-count" class="nb-stat"></p>
+                                <button class="nb-action-btn" onclick="startReviewMode()">スタート</button>
+                            </div>
+                            <!-- 学習履歴 -->
+                            <div id="nb-panel-history" class="nb-panel hidden">
+                                <h4 class="nb-title">学習履歴</h4>
+                                <div id="nb-history-calendar" class="nb-calendar"></div>
+                                <div id="nb-history-stats" class="nb-stats"></div>
+                            </div>
+                            <!-- トリビア -->
+                            <div id="nb-panel-trivia" class="nb-panel hidden">
+                                <h4 class="nb-title">トリビア</h4>
+                                <p id="nb-trivia-count" class="nb-stat"></p>
+                                <div id="nb-trivia-grid" class="nb-trivia-grid"></div>
+                            </div>
+                            <!-- バッジ -->
+                            <div id="nb-panel-badge" class="nb-panel hidden">
+                                <h4 class="nb-title">バッジ</h4>
+                                <p id="nb-badge-count" class="nb-stat"></p>
+                                <div id="nb-badge-list" class="nb-badge-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- バッジパネル -->
+        <div id="badge-panel" class="trivia-collection hidden">
+            <div class="history-header">
+                <h3>🏅 バッジ</h3>
+                <button class="text-btn" onclick="toggleBadgePanel()">閉じる</button>
+            </div>
+            <div class="badge-progress" id="badge-progress"></div>
+            <div class="badge-grid" id="badge-grid"></div>
+        </div>
+
+        <!-- バッジ獲得モーダル -->
+        <div id="badge-modal" class="trivia-modal hidden">
+            <div class="trivia-card-reveal">
+                <div class="badge-modal-inner">
+                    <div class="badge-modal-icon" id="badge-modal-icon">🏅</div>
+                    <h3 class="badge-modal-title" id="badge-modal-title">バッジ名</h3>
+                    <p class="badge-modal-desc" id="badge-modal-desc">説明</p>
+                    <p class="badge-modal-msg">バッジを獲得しました！</p>
+                </div>
+                <button class="primary-btn trivia-close-btn" onclick="closeBadgeModal()">OK</button>
+            </div>
+        </div>
+
+        <!-- トリビアカード獲得モーダル -->
+        <div id="trivia-modal" class="trivia-modal hidden">
+            <div class="trivia-card-reveal">
+                <div class="trivia-card-inner" id="trivia-card-inner">
+                    <div class="trivia-rarity" id="trivia-rarity">N</div>
+                    <div class="trivia-icon" id="trivia-icon">🍎</div>
+                    <h3 class="trivia-title" id="trivia-title">タイトル</h3>
+                    <p class="trivia-body" id="trivia-body">本文</p>
+                    <div class="trivia-category" id="trivia-category">科学者</div>
+                </div>
+                <button class="primary-btn trivia-close-btn" onclick="closeTriviaModal()">OK</button>
+            </div>
+        </div>
+
+        <!-- トリビアコレクションパネル -->
+        <div id="trivia-collection" class="trivia-collection hidden">
+            <div class="history-header">
+                <h3>📚 トリビアコレクション</h3>
+                <button class="text-btn" onclick="toggleTriviaCollection()">閉じる</button>
+            </div>
+            <div class="trivia-progress" id="trivia-progress"></div>
+            <div class="trivia-grid" id="trivia-grid"></div>
+        </div>
+
+        <footer>
+            <button id="reset-btn" class="text-btn">学習データをリセット</button>
+            <p>© 2026 Physics Quiz App</p>
+        </footer>
+    </div>
+    <script src="categories.js"></script>
+    <script src="data/trivia.js"></script>
+    <script src="data/badges.js"></script>
+    <script src="supabase-auth.js"></script>
+    <script src="script.js?v=39"></script>
+    <script>
+    // Service Worker 登録
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SW registered:', reg.scope))
+                .catch(err => console.warn('SW registration failed:', err));
+        });
+    }
+    </script>
+</body>
+
+</html>
