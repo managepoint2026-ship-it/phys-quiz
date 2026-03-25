@@ -164,63 +164,51 @@
                 </div>
 
                 <!-- RESULT VIEW (Broadcast Room) -->
-                <div id="result-view" class="card hidden"
-                    style="padding: 0; overflow: hidden; position: relative; min-height: 600px; width: 100%;">
-                    <!-- Background Image Layer -->
-                    <div id="result-bg-container"
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
-                        <img id="result-bg-img" src="images/housou_kumori.jpg"
-                            style="width: 100%; height: 100%; object-fit: cover;">
+                <div id="result-view" class="card hidden" style="padding: 0; overflow: visible; width: 100%;">
+
+                    <!-- イラストエリア -->
+                    <div id="result-illust-area">
+                        <!-- 背景画像 -->
+                        <div id="result-bg-container">
+                            <img id="result-bg-img" src="images/housou_kumori.jpg">
+                        </div>
+                        <!-- オーバーレイ（バブル） -->
+                        <div id="result-content-layer">
+                            <div class="result-bubble bubble-a">
+                                <h3 id="result-comment">成績レポート</h3>
+                                <div class="bubble-row row-score">
+                                    <span>正答数:</span>
+                                    <span class="highlight-val"><span id="final-score">0</span>/5</span>
+                                </div>
+                                <div class="bubble-row row-points">
+                                    <span>獲得Pt:</span>
+                                    <span class="highlight-val" id="earned-points">0 Pt</span>
+                                </div>
+                                <div class="bubble-row row-streak">
+                                    <span>連続正解:</span>
+                                    <span class="highlight-val" id="streak-display">0回</span>
+                                </div>
+                            </div>
+                            <div id="level-result-section" class="result-bubble bubble-b">
+                                <h3><span id="level-tag-result">Lv.0</span> <span id="part-name-result" style="font-size: 0.8em;">分野名</span></h3>
+                                <div class="xp-bar-container small-bar">
+                                    <div class="xp-bar-fill" id="xp-bar-fill"></div>
+                                </div>
+                                <p class="xp-text-small">あと <span id="next-xp">0</span> Pt でレベルアップ</p>
+                            </div>
+                            <div id="result-bubble-bonus" class="result-bubble bubble-c hidden">
+                                <h3>🔥 ボーナス中！</h3>
+                                <p id="bonus-msg-content">倍率 x1.0</p>
+                                <p class="expiry-text">有効期限: 24時間</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Overlay Content Layer -->
-                    <div id="result-content-layer"
-                        style="position: relative; z-index: 10; width: 100%; height: 100%; pointer-events: none;">
-
-                        <!-- Bubble A: Score Report -->
-                        <div class="result-bubble bubble-a">
-                            <h3 id="result-comment">成績レポート</h3>
-                            <div class="bubble-row row-score">
-                                <span>正答数:</span>
-                                <span class="highlight-val"><span id="final-score">0</span>/5</span>
-                            </div>
-                            <div class="bubble-row row-points">
-                                <span>獲得Pt:</span>
-                                <span class="highlight-val" id="earned-points">0 Pt</span>
-                            </div>
-                            <div class="bubble-row row-streak">
-                                <span>連続正解:</span>
-                                <span class="highlight-val" id="streak-display">0回</span>
-                            </div>
-                        </div>
-
-                        <!-- Bubble B: Level Info -->
-                        <div id="level-result-section" class="result-bubble bubble-b">
-                            <h3><span id="level-tag-result">Lv.0</span> <span id="part-name-result"
-                                    style="font-size: 0.8em;">分野名</span></h3>
-                            <div class="xp-bar-container small-bar">
-                                <div class="xp-bar-fill" id="xp-bar-fill"></div>
-                            </div>
-                            <p class="xp-text-small">あと <span id="next-xp">0</span> Pt でレベルアップ</p>
-                        </div>
-
-                        <!-- Bubble C: Bonus (Conditional) -->
-                        <div id="result-bubble-bonus" class="result-bubble bubble-c hidden">
-                            <h3>🔥 ボーナス中！</h3>
-                            <p id="bonus-msg-content">倍率 x1.0</p>
-                            <p class="expiry-text">有効期限: 24時間</p>
-                        </div>
-
-                        <!-- Special Messages -->
+                    <!-- ボタン・メッセージエリア（イラスト外） -->
+                    <div class="result-actions-outer">
                         <div id="special-messages" class="special-messages"></div>
-
-                        <!-- Action Buttons (Bottom) -->
-                        <div class="result-actions" style="pointer-events: auto;">
-                            <button id="retry-btn" class="primary-btn pulse-btn"
-                                style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); margin-bottom: 10px;">同じ分野をもう一度</button>
-                            <button id="back-to-top-btn" class="primary-btn pulse-btn"
-                                style="background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);">トップに戻る</button>
-                        </div>
+                        <button id="retry-btn" class="primary-btn pulse-btn result-btn-retry">同じ分野をもう一度</button>
+                        <button id="back-to-top-btn" class="primary-btn pulse-btn result-btn-back">トップに戻る</button>
                     </div>
                 </div>
             </div>
@@ -345,7 +333,7 @@
     <script src="data/trivia.js"></script>
     <script src="data/badges.js"></script>
     <script src="supabase-auth.js"></script>
-    <script src="script.js?v=41"></script>
+    <script src="script.js?v=42"></script>
     <script>
     // Service Worker 登録
     if ('serviceWorker' in navigator) {
