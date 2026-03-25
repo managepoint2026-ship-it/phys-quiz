@@ -113,9 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
     views.quiz = document.getElementById('quiz-view');
     views.result = document.getElementById('result-view');
 
-    // Initialize scaling
+    // Initialize scaling（PWA起動時にレイアウトが確定するまで複数回実行）
     scaleLayout();
+    setTimeout(scaleLayout, 100);
+    setTimeout(scaleLayout, 300);
+    setTimeout(scaleLayout, 600);
     window.addEventListener('resize', scaleLayout);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', scaleLayout);
+    }
 
     // Initialize Top View
     setupTopView();

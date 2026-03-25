@@ -178,10 +178,10 @@ h1 {
 /* Character Layer - positioned at bottom left */
 .character-layer {
     position: absolute;
-    bottom: 12%;
-    left: -5%;
-    width: 80%;
-    height: 80%;
+    bottom: 10%;
+    left: -8%;
+    width: 55%;
+    height: 75%;
     background-image: url('images/character.png');
     background-size: contain;
     background-position: bottom center;
@@ -759,10 +759,10 @@ label {
     word-break: break-word;
 }
 
-/* If text is long, align left */
+/* 長いテキストも中央揃えを維持 */
 .option-btn.long-text {
-    text-align: left;
-    justify-content: flex-start;
+    text-align: center;
+    justify-content: center;
 }
 
 .option-btn:hover {
@@ -1074,9 +1074,10 @@ label {
 
 .special-messages {
     position: absolute;
-    right: 20px;
-    top: 235px;
-    max-width: 200px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 88%;
     text-align: center;
     font-weight: bold;
     color: #ff6b6b;
@@ -1280,7 +1281,7 @@ label {
 /* Action Buttons Container */
 .result-actions {
     position: absolute;
-    bottom: 30px;
+    bottom: 140px;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
