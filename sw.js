@@ -1,5 +1,5 @@
 // Service Worker for 物理クイズ PWA
-const CACHE_NAME = 'phys-quiz-v6';
+const CACHE_NAME = 'phys-quiz-v7';
 
 // キャッシュするファイル一覧
 const PRECACHE_FILES = [

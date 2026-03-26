@@ -69,55 +69,52 @@ function switchView(viewName) {
 }
 
 // --- Layout Scaling for Mobile ---
+let _stageScale = 1;
+
+function applyStageMargin() {
+    const stage = document.getElementById('game-stage');
+    if (!stage) return;
+    const h = stage.offsetHeight;
+    if (h === 0) return;
+    const visualHeight = h * _stageScale;
+    const gap = h - visualHeight;
+    // 8px 余白を設けて重なりを防ぐ
+    stage.style.marginBottom = `-${gap - 8}px`;
+}
+
 function scaleLayout() {
     const stage = document.getElementById('game-stage');
     if (!stage) return;
 
-    const baseWidth = 800; // Desktop Base Width
-    const padding = 10; // Minimum margin
-
-    // Use the actual viewport size
     const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    const viewportWidth = vw - 20;
+    _stageScale = Math.min(1, viewportWidth / 800);
 
-    const viewportWidth = vw - (padding * 2);
-
-    // Scale to fit width
-    let scale = viewportWidth / baseWidth;
-
-    // Ensure it doesn't scale UP
-    if (scale > 1) scale = 1;
-
-    // Apply scaling
-    stage.style.transform = `scale(${scale})`;
-
-    // Center the stage contents properly
-    // stage.style.width = '800px'; is already set in CSS.
-
-    // game-stageはtransformでスケーリングされるが、レイアウト上は元サイズのまま。
-    // marginBottomを負値にして、レイアウト上の高さをvisual heightに合わせる。
-    const visualHeight = stage.offsetHeight * scale;
-    const layoutGap = stage.offsetHeight - visualHeight;
-    stage.style.marginBottom = `-${layoutGap}px`;
+    stage.style.transform = `scale(${_stageScale})`;
 
     // ノートの枠幅もスケーリングに合わせる
     const notebooks = document.querySelectorAll('.notebook-frame');
     notebooks.forEach(nb => {
-        nb.style.maxWidth = `${800 * scale}px`;
+        nb.style.maxWidth = `${800 * _stageScale}px`;
     });
+
+    applyStageMargin();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Re-bind elements (in case of dynamic issues, though standard is fine)
     views.top = document.getElementById('top-view');
     views.quiz = document.getElementById('quiz-view');
     views.result = document.getElementById('result-view');
 
-    // Initialize scaling（PWA起動時にレイアウトが確定するまで複数回実行）
+    // ResizeObserverでgame-stageの高さ変化を監視し、marginを即時更新
+    const stage = document.getElementById('game-stage');
+    if (stage && window.ResizeObserver) {
+        new ResizeObserver(() => applyStageMargin()).observe(stage);
+    }
+
     scaleLayout();
-    setTimeout(scaleLayout, 100);
-    setTimeout(scaleLayout, 300);
-    setTimeout(scaleLayout, 600);
+    setTimeout(scaleLayout, 200);
+    setTimeout(scaleLayout, 800);
     window.addEventListener('resize', scaleLayout);
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', scaleLayout);
