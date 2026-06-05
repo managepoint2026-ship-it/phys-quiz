@@ -4152,4 +4152,596 @@ window.loadQuizData("part1", [
         "image_url": ""
     }
 
+,
+
+
+    // ============================================================
+    // 力とそのはたらき（5問: A, A, B, B, C）
+    // ============================================================
+    {
+        "id": 11528,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "ox",
+        "classification": "力とそのはたらき",
+        "question": "力は大きさと向きをもつベクトル量であり、同じ作用点にはたらく2力はベクトルの平行四辺形の法則で合成できる。",
+        "options": ["〇", "✕"],
+        "answer": 0,
+        "explanation": "力はベクトル量であり、同じ作用点にはたらく2力 $\\vec{F_1}$、$\\vec{F_2}$ の合力 $\\vec{F}$ は平行四辺形の法則によって求められます。すなわち2つのベクトルを2辺とする平行四辺形の対角線が合力を表します。〇が正解です。",
+        "image_url": ""
+    },
+    {
+        "id": 11529,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "choice",
+        "classification": "力とそのはたらき",
+        "question": "一直線上にない2力の合力を求める方法として正しいものはどれか。",
+        "options": [
+            "2力を2辺とする平行四辺形を描き、その対角線を合力とする",
+            "2力の大きさの平均を合力の大きさとする",
+            "2力の大きさの積を合力の大きさとする",
+            "2力の大きさの差を合力の大きさとする"
+        ],
+        "answer": 0,
+        "explanation": "一直線上にない2力の合力は「平行四辺形の法則」で求めます。2力をそれぞれ2辺とする平行四辺形を描き、その対角線が合力の大きさと向きを表します。これが力の合成の基本操作です。",
+        "image_url": ""
+    },
+    {
+        "id": 11530,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "力とそのはたらき",
+        "question": "大きさ $F$ の力を、互いに $90°$ をなす2方向に分解する。一方の分力の大きさが $\\dfrac{\\sqrt{3}}{2}F$ であるとき、もう一方の分力の大きさはいくらか。",
+        "options": [
+            "$\\dfrac{1}{2}F$",
+            "$\\dfrac{\\sqrt{2}}{2}F$",
+            "$\\dfrac{\\sqrt{3}}{3}F$",
+            "$\\dfrac{2}{3}F$"
+        ],
+        "answer": 0,
+        "explanation": "互いに直角な2方向の分力を $F_1$、$F_2$ とすると、元の力との関係はピタゴラスの定理より\n$$F_1^2 + F_2^2 = F^2$$\n$F_1 = \\dfrac{\\sqrt{3}}{2}F$ を代入すると\n$$\\left(\\dfrac{\\sqrt{3}}{2}F\\right)^2 + F_2^2 = F^2$$\n$$\\dfrac{3}{4}F^2 + F_2^2 = F^2$$\n$$F_2^2 = \\dfrac{1}{4}F^2 \\quad \\Rightarrow \\quad F_2 = \\dfrac{1}{2}F$$\nこれは $30°$・$60°$・$90°$ の分解（$F_1 = F\\cos 30°$、$F_2 = F\\sin 30°$）に対応します。",
+        "image_url": ""
+    },
+    {
+        "id": 11531,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "力とそのはたらき",
+        "question": "大きさ $10\\text{ N}$ の力を水平方向と鉛直方向に分解したとき、水平分力の大きさが $6\\text{ N}$ であった。鉛直分力の大きさはいくらか。",
+        "options": [
+            "$8\\text{ N}$",
+            "$4\\text{ N}$",
+            "$\\sqrt{136}\\text{ N}$",
+            "$16\\text{ N}$"
+        ],
+        "answer": 0,
+        "explanation": "水平分力 $F_x = 6\\text{ N}$、元の力 $F = 10\\text{ N}$ のとき、ピタゴラスの定理より\n$$F_x^2 + F_y^2 = F^2$$\n$$6^2 + F_y^2 = 10^2$$\n$$F_y^2 = 100 - 36 = 64 \\quad \\Rightarrow \\quad F_y = 8\\text{ N}$$\nこれは 3:4:5 の直角三角形（$\\times 2$）です。",
+        "image_url": ""
+    },
+    {
+        "id": 11532,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "力とそのはたらき",
+        "question": "同じ作用点に3力 $F_1 = 4\\text{ N}$（東向き）、$F_2 = 3\\text{ N}$（北向き）、$F_3$（南西向き、東から $225°$）がはたらいてつり合っている。$F_3$ の大きさはいくらか。",
+        "options": [
+            "$5\\text{ N}$",
+            "$7\\text{ N}$",
+            "$\\sqrt{7}\\text{ N}$",
+            "$3\\sqrt{2}\\text{ N}$"
+        ],
+        "answer": 0,
+        "explanation": "3力がつり合うとき、合力はゼロです。\n$F_3$ の向きは南西（東から $225°$）なので\n$$F_{3x} = F_3 \\cos 225° = -\\dfrac{\\sqrt{2}}{2}F_3, \\quad F_{3y} = F_3 \\sin 225° = -\\dfrac{\\sqrt{2}}{2}F_3$$\n\n水平（東西）方向のつり合い：\n$$4 + F_{3x} = 0 \\quad \\Rightarrow \\quad F_{3x} = -4\\text{ N}$$\n\n鉛直（南北）方向のつり合い：\n$$3 + F_{3y} = 0 \\quad \\Rightarrow \\quad F_{3y} = -3\\text{ N}$$\n\n$F_3$ の大きさ：\n$$F_3 = \\sqrt{(-4)^2 + (-3)^2} = \\sqrt{25} = 5\\text{ N}$$",
+        "image_url": ""
+    },
+
+    // ============================================================
+    // 力のつり合い（5問: A, A, B, B, C）
+    // ============================================================
+    {
+        "id": 11533,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "ox",
+        "classification": "力のつり合い",
+        "question": "物体にはたらく重力と、その物体が床を押す力（垂直抗力の反作用）は、作用・反作用の関係にある。",
+        "options": ["〇", "✕"],
+        "answer": 1,
+        "explanation": "これは✕です。「重力」と「床が物体を押す垂直抗力」はつり合いの関係（同一物体にはたらく2力）であり、作用・反作用の関係ではありません。\n\n作用・反作用の関係にある力の対は「物体が床を押す力」と「床が物体を押す垂直抗力」です。作用・反作用の2力は異なる2物体の間で互いにはたらきます。",
+        "image_url": ""
+    },
+    {
+        "id": 11534,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "choice",
+        "classification": "力のつり合い",
+        "question": "水平な床に置かれた物体が静止している。物体にはたらく重力と床からの垂直抗力の関係として正しいものはどれか。",
+        "options": [
+            "大きさが等しく、逆向きで、同一直線上にある（つり合いの関係）",
+            "大きさが等しく、同じ向きである",
+            "作用・反作用の関係にある",
+            "どちらも物体が床に及ぼす力である"
+        ],
+        "answer": 0,
+        "explanation": "物体が静止しているとき、物体にはたらく重力（下向き）と垂直抗力（上向き）は「つり合いの関係」にあります。つり合いの2力は同一物体にはたらき、大きさが等しく、向きが逆で、同一直線上にある点が特徴です。\n\nなお、「作用・反作用」は2つの異なる物体の間の力の対であり、この2力とは別の概念です。",
+        "image_url": ""
+    },
+    {
+        "id": 11535,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "力のつり合い",
+        "question": "なめらかな斜面（傾角 $30°$）上にある質量 $4.0\\text{ kg}$ の物体をひもで引いて斜面上に静止させた。ひもが斜面に平行であるとき、ひもの張力 $T$ の大きさはいくらか。ただし $g = 10\\text{ m/s}^2$ とする。",
+        "options": [
+            "$20\\text{ N}$",
+            "$40\\text{ N}$",
+            "$20\\sqrt{3}\\text{ N}$",
+            "$10\\text{ N}$"
+        ],
+        "answer": 0,
+        "explanation": "斜面に平行な方向（上向きを正）のつり合いを考えます。\n- ひもの張力 $T$（上向き）\n- 重力の斜面平行成分 $mg\\sin 30°$（下向き）\n\n$$T = mg\\sin 30° = 4.0 \\times 10 \\times \\dfrac{1}{2} = 20\\text{ N}$$",
+        "image_url": ""
+    },
+    {
+        "id": 11536,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "力のつり合い",
+        "question": "天井から2本のひもで質量 $6.0\\text{ kg}$ のおもりをつり下げた。2本のひもはそれぞれ鉛直方向と $30°$・$60°$ の角をなしている。鉛直方向と $30°$ をなすひもの張力 $T_1$ の大きさはいくらか。ただし $g = 10\\text{ m/s}^2$ とする。",
+        "options": [
+            "$30\\text{ N}$",
+            "$60\\text{ N}$",
+            "$30\\sqrt{3}\\text{ N}$",
+            "$20\\sqrt{3}\\text{ N}$"
+        ],
+        "answer": 2,
+        "explanation": "おもりにはたらく力のつり合いを水平・鉛直方向に分解します。\n鉛直方向と $30°$ をなすひもの張力を $T_1$、鉛直方向と $60°$ をなすひもの張力を $T_2$ とします。\n\n水平方向のつり合い：\n$$T_1 \\sin 30° = T_2 \\sin 60°$$\n$$\\dfrac{1}{2}T_1 = \\dfrac{\\sqrt{3}}{2}T_2 \\quad \\Rightarrow \\quad T_1 = \\sqrt{3}\\,T_2 \\quad \\cdots (1)$$\n\n鉛直方向のつり合い：\n$$T_1 \\cos 30° + T_2 \\cos 60° = mg = 6.0 \\times 10 = 60\\text{ N} \\quad \\cdots (2)$$\n\n$(1)$ を $(2)$ に代入：\n$$\\dfrac{\\sqrt{3}}{2} \\cdot \\sqrt{3}\\,T_2 + \\dfrac{1}{2}T_2 = 60$$\n$$2T_2 = 60 \\quad \\Rightarrow \\quad T_2 = 30\\text{ N}$$\n$$T_1 = \\sqrt{3} \\times 30 = 30\\sqrt{3}\\text{ N}$$\n\nよって鉛直方向と $30°$ をなすひもの張力は $T_1 = 30\\sqrt{3}\\text{ N}$（③）です。",
+        "image_url": ""
+    },
+    {
+        "id": 11537,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "力のつり合い",
+        "question": "なめらかな鉛直壁と水平床の間に、質量 $m$ の球（半径 $r$）が挟まって静止している。球が床から受ける垂直抗力 $N_1$ と壁から受ける垂直抗力 $N_2$ の組み合わせとして正しいものはどれか。",
+        "options": [
+            "$N_1 = mg$、$N_2 = 0$",
+            "$N_1 = \\dfrac{mg}{2}$、$N_2 = mg$",
+            "$N_1 = mg$、$N_2 = mg$",
+            "$N_1 = \\dfrac{mg}{\\sqrt{2}}$、$N_2 = \\dfrac{mg}{\\sqrt{2}}$"
+        ],
+        "answer": 0,
+        "explanation": "球にはたらく力は、重力 $mg$（下向き）、床からの垂直抗力 $N_1$（鉛直上向き）、壁からの垂直抗力 $N_2$（水平で壁から離れる向き）の3力です。\n\n鉛直方向のつり合い：$N_1 = mg$\n水平方向のつり合い：$N_2 = 0$\n\n壁はなめらかで摩擦がなく、水平方向に球を押し付ける外力も存在しないので $N_2 = 0$ となります。球は床にのっているだけであり、壁には接触していても法線方向の力は受けません。",
+        "image_url": ""
+    },
+
+    // ============================================================
+    // 運動の法則（6問: A, A, B, B, C, C）
+    // ============================================================
+    {
+        "id": 11538,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "ox",
+        "classification": "運動の法則",
+        "question": "慣性の法則（運動の第1法則）とは、外力がはたらかないか、合力がゼロのとき、静止している物体は静止し続け、運動している物体は等速直線運動を続けるというものである。",
+        "options": ["〇", "✕"],
+        "answer": 0,
+        "explanation": "慣性の法則（ニュートンの第1法則）の正しい記述です。「外力がはたらかない、または合力がゼロ」のとき、物体はその運動状態を変えないという法則で、物体が自分の運動状態を維持しようとする性質を「慣性」といいます。〇が正解です。",
+        "image_url": ""
+    },
+    {
+        "id": 11539,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "choice",
+        "classification": "運動の法則",
+        "question": "ニュートンの運動の第3法則（作用・反作用の法則）として正しい記述はどれか。",
+        "options": [
+            "物体Aが物体Bに力を及ぼすとき、BはAに大きさが等しく逆向きの力を及ぼす",
+            "合力がゼロのとき物体は等速直線運動をする",
+            "加速度は合力に比例し、質量に反比例する",
+            "物体にはたらく合力がゼロならば物体は静止している"
+        ],
+        "answer": 0,
+        "explanation": "運動の第3法則（作用・反作用の法則）：「物体Aが物体Bに力 $\\vec{F}$ を及ぼすとき、BはAに $-\\vec{F}$（大きさが等しく、逆向き）の力を及ぼす」。この2力は同一直線上にあり、同時にはたらき、大きさが等しく向きが反対です。なお②は第1法則、③は第2法則を述べています。",
+        "image_url": ""
+    },
+    {
+        "id": 11540,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "運動の法則",
+        "question": "質量 $3.0\\text{ kg}$ の物体が水平でなめらかな面上で加速度 $4.0\\text{ m/s}^2$ で運動している。物体にはたらく合力の大きさはいくらか。",
+        "options": [
+            "$12\\text{ N}$",
+            "$7.0\\text{ N}$",
+            "$1.3\\text{ N}$",
+            "$24\\text{ N}$"
+        ],
+        "answer": 0,
+        "explanation": "運動方程式 $F = ma$ より\n$$F = 3.0\\text{ kg} \\times 4.0\\text{ m/s}^2 = 12\\text{ N}$$",
+        "image_url": ""
+    },
+    {
+        "id": 11541,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "運動の法則",
+        "question": "なめらかな斜面（傾角 $30°$）上に質量 $2.0\\text{ kg}$ の物体を静かに置いた。物体の加速度の大きさはいくらか。ただし $g = 10\\text{ m/s}^2$ とする。",
+        "options": [
+            "$5.0\\text{ m/s}^2$",
+            "$10\\text{ m/s}^2$",
+            "$5.0\\sqrt{3}\\text{ m/s}^2$",
+            "$2.5\\text{ m/s}^2$"
+        ],
+        "answer": 0,
+        "explanation": "なめらかな斜面上では、斜面方向の合力は重力の斜面平行成分のみです。\n\n斜面に平行な方向の運動方程式（下向きを正）：\n$$ma = mg\\sin 30°$$\n$$a = g\\sin 30° = 10 \\times \\dfrac{1}{2} = 5.0\\text{ m/s}^2$$\n\n物体は斜面に沿って下向きに $5.0\\text{ m/s}^2$ で加速します。",
+        "image_url": ""
+    },
+    {
+        "id": 11542,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "運動の法則",
+        "question": "なめらかな水平面上に質量 $M$ の台車があり、その上に質量 $m$ の物体が乗っている。物体と台車の間の静止摩擦係数を $\\mu$ とする。台車を水平方向に力 $F$ で引いたとき、物体が台車上でずれずに一体となって動くための条件として正しいものはどれか。",
+        "options": [
+            "$F \\leq \\mu(M+m)g$",
+            "$F \\leq \\mu mg$",
+            "$F \\leq \\mu Mg$",
+            "$F \\leq \\dfrac{\\mu(M+m)g \\cdot m}{M}$"
+        ],
+        "answer": 0,
+        "explanation": "一体となって動くときの加速度：$a = \\dfrac{F}{M+m}$\n\n物体（質量 $m$）だけに注目すると、物体を加速させる力は台車との間の静止摩擦力 $f$ のみです。\n$$f = ma = \\dfrac{mF}{M+m}$$\n\nこの静止摩擦力が最大静止摩擦力以下であればよいので\n$$\\dfrac{mF}{M+m} \\leq \\mu mg$$\n$$F \\leq \\mu(M+m)g$$",
+        "image_url": ""
+    },
+    {
+        "id": 11543,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "運動の法則",
+        "question": "質量 $m_1$ の物体Aと質量 $m_2$ の物体Bを軽いひもでつなぎ、なめらかな滑車を通して静かに放した（$m_1 > m_2$）。ひもの張力 $T$ はいくらか。",
+        "options": [
+            "$T = \\dfrac{2m_1 m_2}{m_1+m_2}g$",
+            "$T = \\dfrac{m_1 m_2}{m_1+m_2}g$",
+            "$T = \\dfrac{(m_1-m_2)g}{m_1+m_2}$",
+            "$T = (m_1 + m_2)g$"
+        ],
+        "answer": 0,
+        "explanation": "Aは下降、Bは上昇する（$m_1 > m_2$）。加速度を $a$、張力を $T$ とします。\n\nA（下向きを正）の運動方程式：\n$$m_1 a = m_1 g - T \\quad \\cdots (1)$$\n\nB（上向きを正）の運動方程式：\n$$m_2 a = T - m_2 g \\quad \\cdots (2)$$\n\n$(1) + (2)$：\n$$(m_1 + m_2)a = (m_1 - m_2)g \\quad \\Rightarrow \\quad a = \\dfrac{(m_1 - m_2)g}{m_1 + m_2}$$\n\n$(2)$ に代入：\n$$T = m_2(a + g) = m_2 \\cdot \\dfrac{2m_1 g}{m_1+m_2} = \\dfrac{2m_1 m_2 g}{m_1+m_2}$$\n\nこれがアトウッドマシンの張力の公式です。",
+        "image_url": ""
+    },
+
+    // ============================================================
+    // 摩擦を受ける運動（6問: A, A, B, B, C, C）
+    // ============================================================
+    {
+        "id": 11544,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "ox",
+        "classification": "摩擦を受ける運動",
+        "question": "静止している物体に力を加えていくとき、物体が動き出す直前の静止摩擦力の大きさ（最大静止摩擦力）は、動き出した後の動摩擦力の大きさより大きい。",
+        "options": ["〇", "✕"],
+        "answer": 0,
+        "explanation": "一般に最大静止摩擦力 $f_0 = \\mu N$ は動摩擦力 $f' = \\mu' N$ より大きく（$\\mu > \\mu'$）、物体が「動き始める」ときにいちばん大きな力が必要で、動き出すと少し小さい力で動かし続けられます。〇が正解です。",
+        "image_url": ""
+    },
+    {
+        "id": 11545,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "choice",
+        "classification": "摩擦を受ける運動",
+        "question": "粗い水平面上を物体が速さ $v_0$ で運動を始め、動摩擦力のみを受けて減速した。動摩擦係数を $\\mu'$、重力加速度を $g$ とするとき、減速度（加速度の大きさ）はいくらか。",
+        "options": [
+            "$\\mu' g$",
+            "$\\dfrac{\\mu' g}{m}$",
+            "$\\mu' m g$",
+            "$\\dfrac{g}{\\mu'}$"
+        ],
+        "answer": 0,
+        "explanation": "動摩擦力 $f' = \\mu' N = \\mu' mg$（水平面なので $N = mg$）\n\n運動方程式（運動方向を正、摩擦力は負）：\n$$ma = -\\mu' mg \\quad \\Rightarrow \\quad a = -\\mu' g$$\n\n減速度（加速度の大きさ）は $\\mu' g$ で、質量 $m$ によらない点が重要です。",
+        "image_url": ""
+    },
+    {
+        "id": 11546,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "摩擦を受ける運動",
+        "question": "粗い水平面上の質量 $2.0\\text{ kg}$ の物体に、水平方向に $14\\text{ N}$ の力を加えたところ、加速度 $4.0\\text{ m/s}^2$ で動いた。動摩擦係数はいくらか。ただし $g = 10\\text{ m/s}^2$ とする。",
+        "options": [
+            "$0.30$",
+            "$0.50$",
+            "$0.70$",
+            "$0.20$"
+        ],
+        "answer": 0,
+        "explanation": "垂直抗力 $N = mg = 2.0 \\times 10 = 20\\text{ N}$\n\n運動方程式（進行方向を正）：\n$$F - f' = ma$$\n$$14 - f' = 2.0 \\times 4.0 = 8.0 \\quad \\Rightarrow \\quad f' = 6.0\\text{ N}$$\n\n動摩擦係数：\n$$\\mu' = \\dfrac{f'}{N} = \\dfrac{6.0}{20} = 0.30$$",
+        "image_url": ""
+    },
+    {
+        "id": 11547,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "摩擦を受ける運動",
+        "question": "傾角 $\\theta$ の粗い斜面上に質量 $m$ の物体を置いたところ静止した。このとき斜面が物体に及ぼす摩擦力の大きさはいくらか。",
+        "options": [
+            "$mg\\sin\\theta$",
+            "$mg\\cos\\theta$",
+            "$\\mu mg\\cos\\theta$",
+            "$mg\\tan\\theta$"
+        ],
+        "answer": 0,
+        "explanation": "物体が静止しているので、斜面に平行な方向のつり合いが成り立ちます。\n\n斜面平行方向（上向きを正）：\n$$f - mg\\sin\\theta = 0 \\quad \\Rightarrow \\quad f = mg\\sin\\theta$$\n\nここで $f$ は静止摩擦力です（最大値 $\\mu mg\\cos\\theta$ 以下）。物体は斜面をすべり落ちないよう、重力の斜面平行成分をちょうど支える摩擦力を受けています。",
+        "image_url": ""
+    },
+    {
+        "id": 11548,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "摩擦を受ける運動",
+        "question": "粗い水平面上に置かれた質量 $m$ の物体を、水平方向から角度 $\\theta$ 上向きに力 $F$ で引いて等速直線運動させた。動摩擦係数 $\\mu'$ を表す式として正しいものはどれか。",
+        "options": [
+            "$\\mu' = \\dfrac{F\\cos\\theta}{mg - F\\sin\\theta}$",
+            "$\\mu' = \\dfrac{F\\cos\\theta}{mg}$",
+            "$\\mu' = \\dfrac{F\\cos\\theta}{mg + F\\sin\\theta}$",
+            "$\\mu' = \\dfrac{F}{mg\\cos\\theta}$"
+        ],
+        "answer": 0,
+        "explanation": "力の水平成分：$F\\cos\\theta$（前向き）、鉛直成分：$F\\sin\\theta$（上向き）\n\n鉛直方向のつり合い（垂直抗力 $N$）：\n$$N + F\\sin\\theta = mg \\quad \\Rightarrow \\quad N = mg - F\\sin\\theta$$\n\n水平方向のつり合い（等速直線運動 → 合力ゼロ）：\n$$F\\cos\\theta = f' = \\mu' N = \\mu'(mg - F\\sin\\theta)$$\n$$\\mu' = \\dfrac{F\\cos\\theta}{mg - F\\sin\\theta}$$\n\n力を斜め上向きに加えると垂直抗力が減少し、摩擦力が小さくなる点がポイントです。",
+        "image_url": ""
+    },
+    {
+        "id": 11549,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "摩擦を受ける運動",
+        "question": "傾角 $\\theta$ の粗い斜面（動摩擦係数 $\\mu'$）上に質量 $m$ の物体を置き、斜面に平行な上向きの力 $F$ を加えて物体を斜面上方へ動かした。このときの加速度の大きさはいくらか。ただし $g$ を重力加速度とする。",
+        "options": [
+            "$\\dfrac{F - mg\\sin\\theta - \\mu' mg\\cos\\theta}{m}$",
+            "$\\dfrac{F - mg\\sin\\theta + \\mu' mg\\cos\\theta}{m}$",
+            "$\\dfrac{F + mg\\sin\\theta - \\mu' mg\\cos\\theta}{m}$",
+            "$\\dfrac{F}{m} - g$"
+        ],
+        "answer": 0,
+        "explanation": "斜面上向きを正とします。\n\n垂直抗力：$N = mg\\cos\\theta$\n動摩擦力：$f' = \\mu' mg\\cos\\theta$（物体が上方へ動くので摩擦は下向き）\n\n運動方程式：\n$$ma = F - mg\\sin\\theta - \\mu' mg\\cos\\theta$$\n$$a = \\dfrac{F - mg\\sin\\theta - \\mu' mg\\cos\\theta}{m}$$",
+        "image_url": ""
+    },
+
+    // ============================================================
+    // 液体や気体から受ける力（5問: A, A, B, B, C）
+    // ============================================================
+    {
+        "id": 11550,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "ox",
+        "classification": "液体や気体から受ける力",
+        "question": "水に浮かんでいる物体（一部が水面上に出ている）が受ける浮力は、物体全体の体積と水の密度から計算する。",
+        "options": ["〇", "✕"],
+        "answer": 1,
+        "explanation": "✕が正解です。浮力はその物体が「押しのけた流体の体積」に相当する流体の重さに等しく、物体全体の体積ではなく「水中に沈んでいる部分の体積 $V'$」から計算します。\n$$F = \\rho_0 V' g$$\n浮かんでいる場合は $V' < V$（全体積）であるため、物体全体の体積を使うと浮力を過大評価することになります。",
+        "image_url": ""
+    },
+    {
+        "id": 11551,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "choice",
+        "classification": "液体や気体から受ける力",
+        "question": "水圧の性質として正しいものはどれか。",
+        "options": [
+            "深さが深くなるほど大きくなり、同じ深さではあらゆる方向に等しくはたらく",
+            "深さによらず一定で、鉛直下向きにのみはたらく",
+            "物体の形状によって異なる",
+            "深さに反比例する"
+        ],
+        "answer": 0,
+        "explanation": "水圧（液体の圧力）は深さ $h$、液体の密度 $\\rho$、重力加速度 $g$ を用いて $p = \\rho g h$ で表されます。深さが増すほど大きくなります。また、液体中の圧力はあらゆる方向に等しくはたらく（パスカルの原理）という性質があります。",
+        "image_url": ""
+    },
+    {
+        "id": 11552,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "液体や気体から受ける力",
+        "question": "水（密度 $1.0 \\times 10^3\\text{ kg/m}^3$）の中に密度 $0.60 \\times 10^3\\text{ kg/m}^3$、体積 $5.0 \\times 10^{-3}\\text{ m}^3$ の物体を完全に沈めた。物体にはたらく合力（浮力と重力の合力）の大きさと向きはどれか。ただし $g = 10\\text{ m/s}^2$ とする。",
+        "options": [
+            "$20\\text{ N}$（上向き）",
+            "$20\\text{ N}$（下向き）",
+            "$50\\text{ N}$（上向き）",
+            "$30\\text{ N}$（下向き）"
+        ],
+        "answer": 0,
+        "explanation": "浮力：\n$$F = \\rho_{\\text{水}} V g = 1.0 \\times 10^3 \\times 5.0 \\times 10^{-3} \\times 10 = 50\\text{ N}\\text{（上向き）}$$\n\n重力：\n$$W = \\rho_{\\text{物}} V g = 0.60 \\times 10^3 \\times 5.0 \\times 10^{-3} \\times 10 = 30\\text{ N}\\text{（下向き）}$$\n\n合力：$F - W = 50 - 30 = 20\\text{ N}$（上向き）\n\n密度が水より小さい物体は上向きの合力を受け、放すと浮かび上がります。",
+        "image_url": ""
+    },
+    {
+        "id": 11553,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "液体や気体から受ける力",
+        "question": "質量 $0.50\\text{ kg}$ の物体をばねばかりで吊るすと $5.0\\text{ N}$ を示した。この物体を水中に完全に沈めたところ、ばねばかりは $3.0\\text{ N}$ を示した。物体の体積はいくらか。ただし水の密度 $\\rho = 1.0 \\times 10^3\\text{ kg/m}^3$、$g = 10\\text{ m/s}^2$ とする。",
+        "options": [
+            "$2.0 \\times 10^{-4}\\text{ m}^3$",
+            "$5.0 \\times 10^{-4}\\text{ m}^3$",
+            "$3.0 \\times 10^{-4}\\text{ m}^3$",
+            "$1.0 \\times 10^{-4}\\text{ m}^3$"
+        ],
+        "answer": 0,
+        "explanation": "空気中：$5.0\\text{ N}$、水中：$3.0\\text{ N}$\n\n浮力 $F = 5.0 - 3.0 = 2.0\\text{ N}$\n\nアルキメデスの原理より\n$$F = \\rho V g \\quad \\Rightarrow \\quad V = \\dfrac{F}{\\rho g} = \\dfrac{2.0}{1.0 \\times 10^3 \\times 10} = 2.0 \\times 10^{-4}\\text{ m}^3$$",
+        "image_url": ""
+    },
+    {
+        "id": 11554,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "液体や気体から受ける力",
+        "question": "密度 $\\rho_1$ の液体の上に密度 $\\rho_2$（$\\rho_2 > \\rho_1$）の液体が層をなしているとする（下層が $\\rho_2$、上層が $\\rho_1$）。密度 $\\rho$（$\\rho_1 < \\rho < \\rho_2$）の物体を入れると2液体の境界面付近で静止した。下の液体中に沈んでいる体積の割合 $\\dfrac{V_2}{V}$ を表す式はどれか。",
+        "options": [
+            "$\\dfrac{\\rho - \\rho_1}{\\rho_2 - \\rho_1}$",
+            "$\\dfrac{\\rho_2 - \\rho}{\\rho_2 - \\rho_1}$",
+            "$\\dfrac{\\rho}{\\rho_1 + \\rho_2}$",
+            "$\\dfrac{\\rho_1}{\\rho_2}$"
+        ],
+        "answer": 0,
+        "explanation": "物体の体積を $V$、下の液体（密度 $\\rho_2$）に沈む部分を $V_2$、上の液体（密度 $\\rho_1$）に浸る部分を $V_1 = V - V_2$ とします。\n\n重力＝浮力のつり合い：\n$$\\rho V g = \\rho_2 V_2 g + \\rho_1 (V - V_2) g$$\n$$\\rho V = \\rho_2 V_2 + \\rho_1 V - \\rho_1 V_2$$\n$$(\\rho - \\rho_1)V = (\\rho_2 - \\rho_1)V_2$$\n$$\\dfrac{V_2}{V} = \\dfrac{\\rho - \\rho_1}{\\rho_2 - \\rho_1}$$",
+        "image_url": ""
+    },
+
+    // ============================================================
+    // 剛体にはたらく力のつりあい（8問: A, A, B, B, B, C, C, C）
+    // ============================================================
+    {
+        "id": 11555,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "ox",
+        "classification": "剛体にはたらく力のつりあい",
+        "question": "力のモーメントは、回転軸を変えると同じ力でも値が変わる。",
+        "options": ["〇", "✕"],
+        "answer": 0,
+        "explanation": "力のモーメント $N = Fl$（$l$ は回転軸から力の作用線までの垂直距離）であり、$l$ は回転軸の位置によって変わります。したがって、同じ力でも回転軸の取り方によってモーメントの大きさは変わります。〇が正解です。\n\nただし剛体がつり合っているとき、任意の点のまわりでモーメントの和はゼロになります。",
+        "image_url": ""
+    },
+    {
+        "id": 11556,
+        "category": "p1_c2",
+        "difficulty": "A",
+        "type": "choice",
+        "classification": "剛体にはたらく力のつりあい",
+        "question": "一様な棒の重心の位置はどこか。",
+        "options": [
+            "棒の中央",
+            "棒の左端",
+            "棒の右端",
+            "棒の断面積の中央"
+        ],
+        "answer": 0,
+        "explanation": "一様な棒（密度・断面積が均一）の重心は、棒の中央（長さを二等分する点）にあります。物体の重力は重心に集中してはたらくとみなすことができます。",
+        "image_url": ""
+    },
+    {
+        "id": 11557,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "剛体にはたらく力のつりあい",
+        "question": "回転軸から $0.40\\text{ m}$ の距離に $30\\text{ N}$ の力が垂直にはたらくとき、この力のモーメントの大きさはいくらか。",
+        "options": [
+            "$12\\text{ N}\\cdot\\text{m}$",
+            "$75\\text{ N}\\cdot\\text{m}$",
+            "$30\\text{ N}\\cdot\\text{m}$",
+            "$0.40\\text{ N}\\cdot\\text{m}$"
+        ],
+        "answer": 0,
+        "explanation": "力のモーメント $N = Fl$\n$$N = 30\\text{ N} \\times 0.40\\text{ m} = 12\\text{ N}\\cdot\\text{m}$$",
+        "image_url": ""
+    },
+    {
+        "id": 11558,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "剛体にはたらく力のつりあい",
+        "question": "長さ $1.2\\text{ m}$ の一様な棒（質量 $2.0\\text{ kg}$）の両端をそれぞれひもで天井から吊るした。A端から $0.40\\text{ m}$ の位置に質量 $4.0\\text{ kg}$ のおもりをのせた。A端のひもの張力 $T_A$ はいくらか。ただし $g = 10\\text{ m/s}^2$ とする。",
+        "options": [
+            "$\\dfrac{110}{3}\\text{ N}$",
+            "$\\dfrac{70}{3}\\text{ N}$",
+            "$20\\text{ N}$",
+            "$60\\text{ N}$"
+        ],
+        "answer": 0,
+        "explanation": "B端のまわりのモーメントのつり合いを立てます（B端から各力までの距離）。\n\n- $T_A$（上向き）：$1.2\\text{ m}$\n- 棒の重力 $20\\text{ N}$（下向き）：中点なので $0.60\\text{ m}$\n- おもりの重力 $40\\text{ N}$（下向き）：A端から $0.40\\text{ m}$ なのでB端から $0.80\\text{ m}$\n\nB端まわりのつり合い：\n$$T_A \\times 1.2 = 20 \\times 0.60 + 40 \\times 0.80$$\n$$1.2\\,T_A = 12 + 32 = 44$$\n$$T_A = \\dfrac{44}{1.2} = \\dfrac{110}{3} \\fallingdotseq 36.7\\text{ N}$$\n\n（検算）$T_B = \\dfrac{70}{3}\\text{ N}$、$T_A + T_B = \\dfrac{180}{3} = 60\\text{ N} = (2.0+4.0)\\times 10$ ✓",
+        "image_url": ""
+    },
+    {
+        "id": 11559,
+        "category": "p1_c2",
+        "difficulty": "B",
+        "type": "choice",
+        "classification": "剛体にはたらく力のつりあい",
+        "question": "長さ $L$ の一様な棒（質量 $m$）の一端を壁に固定したヒンジで支え、他端をひもで天井に鉛直につないで水平に保った。棒の先端（ひも端）に質量 $M$ の荷物をつり下げたとき、ひもの張力 $T$ はいくらか。ただし $g$ を重力加速度とする。",
+        "options": [
+            "$T = \\dfrac{(2M+m)g}{2}$",
+            "$T = \\dfrac{(M+m)g}{2}$",
+            "$T = Mg$",
+            "$T = \\dfrac{Mg}{2}$"
+        ],
+        "answer": 0,
+        "explanation": "ヒンジのまわりのモーメントのつり合いをとります。\n\n各力のヒンジからの距離：\n- 荷物の重力 $Mg$（下向き）：先端なので $L$\n- 棒の重力 $mg$（下向き）：重心（中点）なので $\\dfrac{L}{2}$\n- ひもの張力 $T$（上向き）：先端なので $L$\n\nつり合い（時計回りを正）：\n$$Mg \\cdot L + mg \\cdot \\dfrac{L}{2} = T \\cdot L$$\n$$T = Mg + \\dfrac{mg}{2} = \\dfrac{2Mg + mg}{2} = \\dfrac{(2M+m)g}{2}$$",
+        "image_url": ""
+    },
+    {
+        "id": 11560,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "剛体にはたらく力のつりあい",
+        "question": "水平な床の上に質量 $m$、高さ $h$、底辺 $d$ の一様な直方体の箱が置かれている。この箱の上面の中央に水平方向の力 $F$ を加えて箱を傾かせようとする。箱が転倒し始める（一方の底辺を軸として傾き始める）ための条件はどれか。",
+        "options": [
+            "$F > \\dfrac{mgd}{2h}$",
+            "$F > \\dfrac{mgh}{2d}$",
+            "$F > \\dfrac{mgd}{h}$",
+            "$F > \\dfrac{mg}{2}$"
+        ],
+        "answer": 0,
+        "explanation": "箱が転倒する回転軸は、力 $F$ を加えた側とは反対側の底辺（底面の端）です。\n\n転倒しようとするモーメント（$F$ によるもの）：\n$$N_F = F \\times h$$\n（$F$ の作用点は床から高さ $h$）\n\n転倒を防ぐモーメント（重力によるもの）：\n$$N_{mg} = mg \\times \\dfrac{d}{2}$$\n（重心は回転軸から水平距離 $\\dfrac{d}{2}$）\n\n転倒し始める条件 $N_F > N_{mg}$：\n$$Fh > mg \\cdot \\dfrac{d}{2} \\quad \\Rightarrow \\quad F > \\dfrac{mgd}{2h}$$",
+        "image_url": ""
+    },
+    {
+        "id": 11561,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "剛体にはたらく力のつりあい",
+        "question": "長さ $L$ の一様な棒（質量 $m$）の一端Aをなめらかな床に置き、他端Bにひもをつけてひもの端を天井へ取りつけて棒を支えた。棒と床のなす角を $\\theta$ とするとき、床からAが受ける垂直抗力 $N$ の大きさはいくらか。",
+        "options": [
+            "$mg$",
+            "$\\dfrac{mg}{2}$",
+            "$mg\\cos\\theta$",
+            "$mg\\sin\\theta$"
+        ],
+        "answer": 1,
+        "explanation": "ひもはB端の真上の天井に取りつけられており、鉛直上向きに張力 $T$ がはたらきます。\n\n棒にはたらく力は次の3力です。\n① 重力 $mg$（棒の中点に下向き）\n② 床AからのN（鉛直上向き）\n③ ひもの張力 $T$（B端に鉛直上向き）\n\nA端のまわりのモーメントのつり合いをとります（$N$ はA端に作用するのでモーメントゼロ）。\n\n各力の腕の長さ（A端からの水平距離）：\n- 重力 $mg$：棒の中点なので $\\dfrac{L\\cos\\theta}{2}$\n- 張力 $T$：B端なので $L\\cos\\theta$\n\nモーメントのつり合い（時計回りを正）：\n$$mg \\cdot \\dfrac{L\\cos\\theta}{2} = T \\cdot L\\cos\\theta$$\n$$T = \\dfrac{mg}{2}$$\n\n鉛直方向のつり合い：\n$$N + T = mg$$\n$$N = mg - \\dfrac{mg}{2} = \\dfrac{mg}{2}$$",
+        "image_url": ""
+    },
+    {
+        "id": 11562,
+        "category": "p1_c2",
+        "difficulty": "C",
+        "type": "choice",
+        "classification": "剛体にはたらく力のつりあい",
+        "question": "水平な床の上に質量 $m$、長さ $L$ の一様な梯子（はしご）が壁に立てかけられている。壁はなめらか、床は粗い（静止摩擦係数 $\\mu$）。梯子と床のなす角を $\\theta$ とするとき、梯子が滑らずに静止できるための条件として正しいものはどれか。",
+        "options": [
+            "$\\tan\\theta \\geq \\dfrac{1}{2\\mu}$",
+            "$\\tan\\theta \\leq \\dfrac{1}{2\\mu}$",
+            "$\\tan\\theta \\geq 2\\mu$",
+            "$\\tan\\theta \\leq 2\\mu$"
+        ],
+        "answer": 0,
+        "explanation": "梯子にはたらく力：\n① 重力 $mg$（中点、下向き）\n② 床の垂直抗力 $N$（鉛直上向き）\n③ 床の静止摩擦力 $f$（壁側を向く水平方向）\n④ 壁の垂直抗力 $R$（水平、壁から離れる向き）\n\n鉛直のつり合い：$N = mg$\n水平のつり合い：$f = R$\n\n下端Aのまわりのモーメントのつり合い：\n- $R$（水平）の腕：$L\\sin\\theta$\n- $mg$（鉛直）の腕：$\\dfrac{L\\cos\\theta}{2}$\n\n$$R \\cdot L\\sin\\theta = mg \\cdot \\dfrac{L\\cos\\theta}{2}$$\n$$R = \\dfrac{mg}{2\\tan\\theta}$$\n\n滑らない条件 $f \\leq \\mu N$：\n$$\\dfrac{mg}{2\\tan\\theta} \\leq \\mu mg \\quad \\Rightarrow \\quad \\tan\\theta \\geq \\dfrac{1}{2\\mu}$$\n\n$\\theta$ が大きい（梯子が立っている）ほど滑りにくいことがわかります。",
+        "image_url": ""
+    }
+
 ]);
