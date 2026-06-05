@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "phys-quiz",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "-p", "8080", "."],
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8080"],
       "port": 8080
     }
   ]

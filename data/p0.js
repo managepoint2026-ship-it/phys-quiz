@@ -2362,5 +2362,159 @@ window.loadQuizData("part0", [
                 "explanation": "$v = at = 3.0 \\times 6.0 = 18\\,\\text{m/s}$ です。"
             }
         ]
+    },
+
+    // --- 追加 A難易度 5問（id: 131-135） ---
+    {
+        "id": 131, "category": "p0_c1", "difficulty": "A", "type": "choice",
+        "classification": "三角比と三角関数",
+        "question": "$\\sin^2\\theta + \\cos^2\\theta$ の値はいくつか。",
+        "options": ["$0$", "$1$", "$2$", "$\\sin\\theta\\cos\\theta$"],
+        "answer": 1,
+        "explanation": "三角関数の基本恒等式より $\\sin^2\\theta + \\cos^2\\theta = 1$ です。角度によらず常に成り立ちます。",
+        "image_url": ""
+    },
+    {
+        "id": 132, "category": "p0_c1", "difficulty": "A", "type": "ox",
+        "classification": "ベクトル",
+        "question": "スカラー量は大きさだけを持ち、向きを持たない量である。",
+        "options": ["〇", "✕"],
+        "answer": 0,
+        "explanation": "スカラー量は大きさのみで表されます。質量・温度・時間などがスカラーの例で、ベクトル量（力・速度など）とは区別されます。",
+        "image_url": ""
+    },
+    {
+        "id": 133, "category": "p0_c1", "difficulty": "A", "type": "ox",
+        "classification": "三角比と三角関数",
+        "question": "$\\tan\\theta = \\dfrac{\\cos\\theta}{\\sin\\theta}$ である。",
+        "options": ["〇", "✕"],
+        "answer": 1,
+        "explanation": "正しくは $\\tan\\theta = \\dfrac{\\sin\\theta}{\\cos\\theta}$ です。分子と分母が逆になっています。",
+        "image_url": ""
+    },
+    {
+        "id": 134, "category": "p0_c1", "difficulty": "A", "type": "choice",
+        "classification": "その他の数学の知識",
+        "question": "指数法則 $a^m \\times a^n$ を正しく表しているのはどれか。",
+        "options": ["$a^{mn}$", "$a^{m+n}$", "$a^{m-n}$", "$(2a)^{m+n}$"],
+        "answer": 1,
+        "explanation": "同じ底の累乗の積は指数を足します。$a^m \\times a^n = a^{m+n}$ です。",
+        "image_url": ""
+    },
+    {
+        "id": 135, "category": "p0_c1", "difficulty": "A", "type": "choice",
+        "classification": "その他の数学の知識",
+        "question": "二次方程式 $ax^2 + bx + c = 0$（$a \\neq 0$）の解の公式はどれか。",
+        "options": [
+            "$x = \\dfrac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$",
+            "$x = \\dfrac{b \\pm \\sqrt{b^2 - 4ac}}{2a}$",
+            "$x = \\dfrac{-b \\pm \\sqrt{b^2 + 4ac}}{2a}$",
+            "$x = \\dfrac{-b \\pm \\sqrt{b^2 - 4ac}}{a}$"
+        ],
+        "answer": 0,
+        "explanation": "二次方程式の解の公式は $x = \\dfrac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$ です。分母が $2a$ であることに注意しましょう。",
+        "image_url": ""
+    },
+
+    // --- B難易度 追加5問 ---
+    {
+        "id": 136, "category": "p0_c1", "difficulty": "B", "type": "choice",
+        "classification": "三角比と三角関数",
+        "question": "速度$v = 20\\,\\text{m/s}$、角度$\\theta = 45°$で斜め上方に投げた物体の鉛直方向の初速度成分はいくつか。",
+        "options": ["$10\\,\\text{m/s}$", "$10\\sqrt{2}\\,\\text{m/s}$", "$20\\,\\text{m/s}$", "$10\\sqrt{3}\\,\\text{m/s}$"], "answer": 1,
+        "explanation": "$v_y = v\\sin 45° = 20 \\times \\frac{\\sqrt{2}}{2} = 10\\sqrt{2}\\,\\text{m/s}$ です。$\\sin 45° = \\frac{\\sqrt{2}}{2}$ を使います。",
+        "image_url": ""
+    },
+    {
+        "id": 137, "category": "p0_c1", "difficulty": "B", "type": "choice",
+        "classification": "ベクトル",
+        "question": "$\\vec{a} = (4, -2)$、$\\vec{b} = (1, 5)$ のとき $2\\vec{a} - \\vec{b}$ の成分を求めよ。",
+        "options": ["$(7, -9)$", "$(9, -7)$", "$(5, 3)$", "$(3, 1)$"], "answer": 0,
+        "explanation": "$2\\vec{a} = (8, -4)$ なので、$2\\vec{a} - \\vec{b} = (8 - 1,\\, -4 - 5) = (7, -9)$ です。",
+        "image_url": ""
+    },
+    {
+        "id": 138, "category": "p0_c1", "difficulty": "B", "type": "choice",
+        "classification": "その他の数学の知識",
+        "question": "連立方程式 $2x + y = 10$、$x - y = 2$ を解いたとき、$x$ の値はいくつか。",
+        "options": ["$4$", "$3$", "$6$", "$2$"], "answer": 0,
+        "explanation": "2式を足すと $3x = 12$ より $x = 4$ です。$y = 10 - 2 \\times 4 = 2$ と確認できます。",
+        "image_url": ""
+    },
+    {
+        "id": 139, "category": "p0_c1", "difficulty": "B", "type": "choice",
+        "classification": "その他の数学の知識",
+        "question": "$1.5\\,\\text{km}$ は何$\\,\\text{m}$か。また、$500\\,\\text{g}$ は何$\\,\\text{kg}$か。正しい組み合わせを選べ。",
+        "options": ["$1500\\,\\text{m}$、$0.5\\,\\text{kg}$", "$150\\,\\text{m}$、$0.5\\,\\text{kg}$", "$1500\\,\\text{m}$、$5.0\\,\\text{kg}$", "$15000\\,\\text{m}$、$0.05\\,\\text{kg}$"], "answer": 0,
+        "explanation": "$1\\,\\text{km} = 1000\\,\\text{m}$ より $1.5\\,\\text{km} = 1500\\,\\text{m}$、$1\\,\\text{kg} = 1000\\,\\text{g}$ より $500\\,\\text{g} = 0.5\\,\\text{kg}$ です。",
+        "image_url": ""
+    },
+    {
+        "id": 140, "category": "p0_c1", "difficulty": "B", "type": "choice",
+        "classification": "その他の数学の知識",
+        "question": "二次方程式 $x^2 - 5x + 6 = 0$ の2つの解の和はいくつか。",
+        "options": ["$5$", "$6$", "$-5$", "$1$"], "answer": 0,
+        "explanation": "$x^2 - 5x + 6 = (x - 2)(x - 3) = 0$ より $x = 2, 3$ です。解の和は $2 + 3 = 5$ です。解と係数の関係からも $-\\frac{-5}{1} = 5$ と求まります。",
+        "image_url": ""
+    },
+
+    // --- 追加 C難易度 2問（id: 141-142） ---
+    {
+        "id": 141, "category": "p0_c1", "difficulty": "C", "type": "choice",
+        "classification": "三角比とベクトルの複合",
+        "question": "（小問形式）",
+        "options": ["（小問形式）", "（小問形式）", "（小問形式）", "（小問形式）"],
+        "answer": 0,
+        "common_text": "川幅$d = 60\\,\\text{m}$の川がある。川の流れの速さは$v_r = 3.0\\,\\text{m/s}$で一様であり、岸に平行に流れている。ボートは静水上での速さが$v_b = 5.0\\,\\text{m/s}$であり、流れに対して角度$\\theta$（上流側に向けて、岸に垂直な方向から測った角度）で進む。ボートが対岸にちょうど真向かいの地点に着くように$\\theta$を定めたい。",
+        "sub_questions": [
+            {
+                "question": "ボートが対岸の真向かいに到達するためには、流れに平行な方向の合成速度が$0$である必要がある。$\\sin\\theta$の値を求めよ。",
+                "options": ["$\\dfrac{3}{5}$", "$\\dfrac{4}{5}$", "$\\dfrac{3}{4}$", "$\\dfrac{5}{3}$"],
+                "answer": 0,
+                "explanation": "流れに平行な方向のつり合い条件は $v_b\\sin\\theta = v_r$ です。よって $\\sin\\theta = \\dfrac{v_r}{v_b} = \\dfrac{3.0}{5.0} = \\dfrac{3}{5}$ となります。"
+            },
+            {
+                "question": "このとき、ボートの岸に垂直な方向の速度成分はいくつか。",
+                "options": ["$3.0\\,\\text{m/s}$", "$4.0\\,\\text{m/s}$", "$5.0\\,\\text{m/s}$", "$\\sqrt{34}\\,\\text{m/s}$"],
+                "answer": 1,
+                "explanation": "$\\sin\\theta = \\dfrac{3}{5}$ より $\\cos\\theta = \\sqrt{1 - \\left(\\dfrac{3}{5}\\right)^2} = \\sqrt{\\dfrac{16}{25}} = \\dfrac{4}{5}$ です。垂直方向の速度成分は $v_b\\cos\\theta = 5.0 \\times \\dfrac{4}{5} = 4.0\\,\\text{m/s}$ です。"
+            },
+            {
+                "question": "ボートが対岸に到達するまでの時間はいくつか。",
+                "options": ["$12\\,\\text{s}$", "$15\\,\\text{s}$", "$20\\,\\text{s}$", "$30\\,\\text{s}$"],
+                "answer": 1,
+                "explanation": "垂直方向の速度$4.0\\,\\text{m/s}$で川幅$60\\,\\text{m}$を渡るので、$t = \\dfrac{d}{v_b\\cos\\theta} = \\dfrac{60}{4.0} = 15\\,\\text{s}$ です。"
+            }
+        ],
+        "image_url": ""
+    },
+    {
+        "id": 142, "category": "p0_c1", "difficulty": "C", "type": "choice",
+        "classification": "数学の物理への応用",
+        "question": "（小問形式）",
+        "options": ["（小問形式）", "（小問形式）", "（小問形式）", "（小問形式）"],
+        "answer": 0,
+        "common_text": "質量$m\\,\\text{kg}$の物体を地面から鉛直上向きに初速$v_0\\,\\text{m/s}$で投げ上げた。重力加速度を$g\\,\\text{m/s}^2$とし、空気抵抗は無視する。物体の高さは$h = v_0 t - \\dfrac{1}{2}gt^2$で表される。ここで$v_0 = 19.6\\,\\text{m/s}$、$g = 9.8\\,\\text{m/s}^2$として以下に答えよ。",
+        "sub_questions": [
+            {
+                "question": "物体が最高点に達する時刻を求めよ。最高点では速度$v = v_0 - gt = 0$が成り立つ。",
+                "options": ["$1.0\\,\\text{s}$", "$2.0\\,\\text{s}$", "$3.0\\,\\text{s}$", "$4.0\\,\\text{s}$"],
+                "answer": 1,
+                "explanation": "$v_0 - gt = 0$ より $t = \\dfrac{v_0}{g} = \\dfrac{19.6}{9.8} = 2.0\\,\\text{s}$ です。分数の計算として $\\dfrac{19.6}{9.8} = 2.0$ を確認しましょう。"
+            },
+            {
+                "question": "最高点の高さ$h$を求めよ。",
+                "options": ["$9.8\\,\\text{m}$", "$14.7\\,\\text{m}$", "$19.6\\,\\text{m}$", "$39.2\\,\\text{m}$"],
+                "answer": 2,
+                "explanation": "$t = 2.0\\,\\text{s}$を代入して $h = 19.6 \\times 2.0 - \\dfrac{1}{2} \\times 9.8 \\times 2.0^2 = 39.2 - 19.6 = 19.6\\,\\text{m}$ です。"
+            },
+            {
+                "question": "物体が再び地面に戻る時刻を求めよ。$h = 0$となる$t > 0$の解を二次方程式から求めること。",
+                "options": ["$2.0\\,\\text{s}$", "$3.0\\,\\text{s}$", "$4.0\\,\\text{s}$", "$5.0\\,\\text{s}$"],
+                "answer": 2,
+                "explanation": "$v_0 t - \\dfrac{1}{2}gt^2 = 0$ より $t\\left(v_0 - \\dfrac{1}{2}gt\\right) = 0$。$t > 0$ の解は $t = \\dfrac{2v_0}{g} = \\dfrac{2 \\times 19.6}{9.8} = 4.0\\,\\text{s}$ です。最高点到達時刻の2倍になることも確認しましょう。"
+            }
+        ],
+        "image_url": ""
     }
 ]);
