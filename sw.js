@@ -1,5 +1,5 @@
 // Service Worker for 物理クイズ PWA
-const CACHE_NAME = 'phys-quiz-v8';
+const CACHE_NAME = 'phys-quiz-v10';
 
 // キャッシュするファイル一覧
 const PRECACHE_FILES = [
@@ -7,6 +7,7 @@ const PRECACHE_FILES = [
   './index.html',
   './style.css',
   './script.js',
+  './supabase-auth.js',
   './categories.js',
   './data/trivia.js',
   './data/badges.js',
@@ -82,8 +83,10 @@ self.addEventListener('fetch', event => {
   }
 
   // ローカルリソース: キャッシュ優先
+  // ignoreSearch: true — style.css?v=10 や data/p1.js?t=... のような
+  // クエリ付きリクエストでもプリキャッシュにヒットさせる（オフライン対応に必須）
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    caches.match(event.request, { ignoreSearch: true }).then(cached => {
       return cached || fetch(event.request).then(response => {
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));

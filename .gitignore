@@ -1,11 +1,13 @@
 # 開発用・不要ファイル
 画像データ①/
 _archive/
+tools/
 プロンプト.txt
 manual_question_creation.md
+プロンプトテンプレート.md
+セクション一覧.md
 *.pptx
 *.url
-*.md
 
 # OS生成ファイル
 .DS_Store

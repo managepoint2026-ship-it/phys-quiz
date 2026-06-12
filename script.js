@@ -605,12 +605,6 @@ async function startReviewMode() {
 
             const questions = await loadDataFile(`data/p${pNum}.js`);
 
-            // 追加ファイルも読み込み試行
-            try {
-                const addQuestions = await loadDataFile(`data/p${pNum}_additional.js`);
-                questions.push(...addQuestions);
-            } catch (e) { /* additional file doesn't exist */ }
-
             questions.forEach(q => {
                 if (wrongIds.has(q.id)) reviewQuestions.push(q);
             });
