@@ -138,7 +138,10 @@ const BADGES = [
             const hasPlayed = stats.partPoints && Object.values(stats.partPoints).some(p => p > 0);
             if (!hasPlayed) return false;
             let count = 0;
-            Object.values(wrong).forEach(ids => count += ids.length);
+            // 旧形式（ID配列）と新形式（間隔反復オブジェクト）の両方に対応
+            Object.values(wrong).forEach(v => {
+                count += Array.isArray(v) ? v.length : Object.keys(v || {}).length;
+            });
             return count === 0 && (stats.hadWrongQuestions || false);
         }
     },
@@ -198,7 +201,7 @@ const BADGES = [
 function calcStreak(log) {
     const today = new Date();
     let streak = 0;
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 120; i++) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
         const key = String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');

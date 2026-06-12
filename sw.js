@@ -1,5 +1,5 @@
 // Service Worker for 物理クイズ PWA
-const CACHE_NAME = 'phys-quiz-v10';
+const CACHE_NAME = 'phys-quiz-v11';
 
 // キャッシュするファイル一覧
 const PRECACHE_FILES = [
@@ -40,10 +40,12 @@ const CDN_RESOURCES = [
 ];
 
 // インストール: プリキャッシュ
+// cache: 'reload' でブラウザの HTTP キャッシュを避け、必ずサーバーから最新を取得する
+// （これがないと、更新直後に古いファイルが新キャッシュに入ることがある）
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(PRECACHE_FILES);
+      return cache.addAll(PRECACHE_FILES.map(url => new Request(url, { cache: 'reload' })));
     }).then(() => self.skipWaiting())
   );
 });

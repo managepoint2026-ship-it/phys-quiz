@@ -544,19 +544,28 @@ function setupTopView() {
         prepareQuiz(selectedCategory, selectedDifficulty);
     };
 
-    // Reset Button Logic
+    // Reset Button Logic（サーバー上のデータも含めて完全に消去する）
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-            if (confirm('【注意】\nこれまでの学習データ（レベル・ポイント・学習履歴・復習リスト）を全て消去してもよろしいですか？\nこの操作は元に戻せません。')) {
-                localStorage.removeItem('phy_quiz_user_stats');
-                localStorage.removeItem('phy_quiz_log');
-                localStorage.removeItem('phy_quiz_wrong');
-                localStorage.removeItem('phy_quiz_trivia');
-                localStorage.removeItem('phy_quiz_badges');
-                alert('データをリセットしました。');
-                location.reload();
+        resetBtn.addEventListener('click', async () => {
+            if (!confirm('【注意】\nこれまでの学習データ（レベル・ポイント・学習履歴・復習リスト・カード・バッジ）を、この端末とサーバーの両方から全て消去します。\nこの操作は元に戻せません。本当によろしいですか？')) {
+                return;
             }
+            // 先にサーバー側を消す（失敗したらローカルも消さない＝再同期で復活するのを防ぐ）
+            if (typeof window.resetServerData === 'function') {
+                const ok = await window.resetServerData();
+                if (!ok) {
+                    alert('サーバー上のデータ削除に失敗しました。\n通信環境を確認して、もう一度お試しください。');
+                    return;
+                }
+            }
+            localStorage.removeItem('phy_quiz_user_stats');
+            localStorage.removeItem('phy_quiz_log');
+            localStorage.removeItem('phy_quiz_wrong');
+            localStorage.removeItem('phy_quiz_trivia');
+            localStorage.removeItem('phy_quiz_badges');
+            alert('データをリセットしました。');
+            location.reload();
         });
     }
 
@@ -564,19 +573,57 @@ function setupTopView() {
     updateReviewBadge();
     updateTriviaCountBadge();
     updateBadgeCountBadge();
+
+    // 連続学習日数（🔥ストリーク）表示
+    updateStreakBanner();
+
+    // 今日の復習がある場合はキャラクターが知らせる
+    const { dueCount } = getDueWrongQuestions();
+    if (dueCount > 0) {
+        const msgEl = document.getElementById('character-message');
+        if (msgEl) msgEl.textContent = `今日の復習が${dueCount}問あるよ！ノートの「復習」からスタート！`;
+    }
+}
+
+// === 連続学習日数バナー（ヘッダー表示） ===
+function updateStreakBanner() {
+    const el = document.getElementById('streak-banner');
+    if (!el) return;
+    const log = getQuizLog();
+    const days = (typeof calcStreak === 'function') ? calcStreak(log) : 0;
+    if (days >= 2) {
+        el.textContent = `🔥 ${days}日連続`;
+        el.classList.remove('hidden');
+    } else {
+        el.classList.add('hidden');
+    }
 }
 
 
 
-// === 復習モード ===
+// === 復習モード（今日が復習日の問題を優先出題） ===
 async function startReviewMode() {
-    const wrong = JSON.parse(localStorage.getItem('phy_quiz_wrong') || '{}');
-    const allPartIds = Object.keys(wrong).filter(pid => wrong[pid].length > 0);
+    const { due, dueCount, totalCount } = getDueWrongQuestions();
 
-    if (allPartIds.length === 0) {
+    if (totalCount === 0) {
         showToast('復習する問題がありません。クイズで間違えた問題がここに追加されます。');
         return;
     }
+
+    // 今日が復習日の問題を優先。なければ全リストから出題
+    let targetIds; // { partId: Set(問題ID) }
+    if (dueCount > 0) {
+        targetIds = {};
+        Object.keys(due).forEach(pid => { targetIds[pid] = new Set(due[pid]); });
+    } else {
+        showToast('今日が復習日の問題はありません。復習リスト全体から出題します。');
+        const wrong = getWrongData();
+        targetIds = {};
+        Object.keys(wrong).forEach(pid => {
+            targetIds[pid] = new Set(Object.keys(wrong[pid]).map(Number));
+        });
+    }
+    const allPartIds = Object.keys(targetIds);
 
     switchView('quiz');
     document.getElementById('question-text').textContent = '復習問題を読み込んでいます...';
@@ -600,7 +647,7 @@ async function startReviewMode() {
         });
 
         for (const partId of allPartIds) {
-            const wrongIds = new Set(wrong[partId]);
+            const wrongIds = targetIds[partId];
             const pNum = partId.replace('part', '');
 
             const questions = await loadDataFile(`data/p${pNum}.js`);
@@ -765,13 +812,21 @@ function selectNotebookPanel(panelName) {
 }
 
 function renderNotebookReview() {
-    const wrongCount = getWrongQuestionCount();
+    const { dueCount, totalCount } = getDueWrongQuestions();
     const el = document.getElementById('nb-review-count');
-    if (el) el.textContent = wrongCount > 0 ? `復習待ち: ${wrongCount}問` : '復習する問題はありません';
+    if (el) {
+        if (totalCount === 0) {
+            el.textContent = '復習する問題はありません';
+        } else if (dueCount > 0) {
+            el.textContent = `今日の復習: ${dueCount}問（復習待ち合計: ${totalCount}問）`;
+        } else {
+            el.textContent = `今日の復習はありません（復習待ち合計: ${totalCount}問）`;
+        }
+    }
     const btn = document.querySelector('#nb-panel-review .nb-action-btn');
     if (btn) {
-        btn.disabled = wrongCount === 0;
-        btn.style.opacity = wrongCount === 0 ? '0.5' : '1';
+        btn.disabled = totalCount === 0;
+        btn.style.opacity = totalCount === 0 ? '0.5' : '1';
     }
 }
 
@@ -798,7 +853,7 @@ function renderNotebookHistory() {
 
     // 統計
     let totalS = 0, totalC = 0, totalQ = 0, streak = 0;
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 120; i++) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
         const key = String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
@@ -1000,19 +1055,17 @@ function getQuizLog() {
 }
 
 function getWrongQuestionCount() {
-    const wrong = JSON.parse(localStorage.getItem('phy_quiz_wrong') || '{}');
-    let count = 0;
-    Object.values(wrong).forEach(ids => { count += ids.length; });
-    return count;
+    return getDueWrongQuestions().totalCount;
 }
 
 // === 復習バッジ更新 ===
 function updateReviewBadge() {
-    const count = getWrongQuestionCount();
+    // バッジには「今日復習すべき問題数」を表示する
+    const { dueCount } = getDueWrongQuestions();
     const badge = document.getElementById('review-count');
     if (badge) {
-        if (count > 0) {
-            badge.textContent = count;
+        if (dueCount > 0) {
+            badge.textContent = dueCount;
             badge.classList.remove('hidden');
         } else {
             badge.classList.add('hidden');
@@ -1084,7 +1137,7 @@ function renderHistoryPanel() {
     let totalSessions = 0, totalCorrect = 0, totalQ = 0, totalPts = 0, streak = 0;
 
     // 連続学習日数を計算
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 120; i++) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
         const key = String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
@@ -1587,8 +1640,10 @@ function startQuiz(questions, difficulty, category) {
                 window.sessionPoints += finalAward;
                 if (allCorrect) {
                     score++;
+                    advanceReviewQuestion(q); // 復習日が来ていた問題なら間隔を進める
                 } else if (q.id) {
                     wrongQuestionIds.push(q.id);
+                    markWrongQuestion(q);
                 }
 
                 showFeedback(true, null, null, difficulty, true, finalAward, bonusApplied);
@@ -1599,16 +1654,23 @@ function startQuiz(questions, difficulty, category) {
                 score++;
                 window.sessionPoints += earned;
                 selectedBtn.classList.add('correct');
-                // 正解した問題を復習リストから除去
-                if (q.id) {
-                    const pMatch = (q.category || '').match(/^(p\d+)_/);
-                    if (pMatch) removeFromWrongQuestions('part' + pMatch[1].substring(1), q.id);
+                // 復習日が来ていた問題なら間隔反復を1段階進める（4回で卒業）
+                const progress = advanceReviewQuestion(q);
+                if (progress) {
+                    if (progress.graduated) {
+                        showToast('🎓 この問題は定着！復習リストから卒業しました');
+                    } else {
+                        showToast(`✅ 復習${progress.streak}回目クリア！あと${SRS_GRADUATE - progress.streak}回正解で定着`);
+                    }
                 }
             } else {
                 selectedBtn.classList.add('wrong');
                 if (buttons[correctIndex]) buttons[correctIndex].classList.add('correct');
-                // 間違えた問題IDを記録
-                if (q.id) wrongQuestionIds.push(q.id);
+                // 間違えた問題を復習リストへ（翌日が復習日になる）
+                if (q.id) {
+                    wrongQuestionIds.push(q.id);
+                    markWrongQuestion(q);
+                }
             }
             showFeedback(isCorrect, correctIndex, explanation, difficulty, false, earned);
         }
@@ -1928,9 +1990,13 @@ function startQuiz(questions, difficulty, category) {
         // --- 学習履歴の保存（コンパクト形式） ---
         saveQuizLog(partId, currentCategory, currentDiff, score, questions.length, finalSessionPoints);
 
-        // --- 間違えた問題IDの保存 ---
-        if (wrongQuestionIds.length > 0 && partId) {
-            saveWrongQuestions(partId, wrongQuestionIds);
+        // ※ 間違えた問題は解答時に markWrongQuestion() で記録済み
+        //   （問題ごとに category からパートを判定するため、復習モードの
+        //    複数パート混在でも正しいパートに保存される）
+
+        // --- 学習データをサーバーへ同期（ログイン時のみ。失敗しても学習は継続） ---
+        if (typeof window.uploadLearningData === 'function') {
+            window.uploadLearningData();
         }
 
         // --- 全問正解カウント記録 ---
@@ -1960,7 +2026,7 @@ function startQuiz(questions, difficulty, category) {
     showQuestion();
 }
 
-// === 学習履歴（日別集計、90日ローリング） ===
+// === 学習履歴（日別集計、120日ローリング） ===
 function saveQuizLog(partId, category, difficulty, correct, total, points) {
     try {
         const log = JSON.parse(localStorage.getItem('phy_quiz_log') || '{}');
@@ -1974,9 +2040,9 @@ function saveQuizLog(partId, category, difficulty, correct, total, points) {
         log[today].t += total;   // 出題数
         log[today].p += points;  // 獲得ポイント
 
-        // 90日より古いエントリを削除
+        // 120日分を超えた古いエントリを削除
         const keys = Object.keys(log).sort();
-        while (keys.length > 90) {
+        while (keys.length > 120) {
             delete log[keys.shift()];
         }
 
@@ -1986,40 +2052,140 @@ function saveQuizLog(partId, category, difficulty, correct, total, points) {
     }
 }
 
-// === 間違えた問題ID（パート別、最大30件/パート） ===
-function saveWrongQuestions(partId, newIds) {
-    try {
-        const wrong = JSON.parse(localStorage.getItem('phy_quiz_wrong') || '{}');
-        if (!wrong[partId]) wrong[partId] = [];
+// === 間違えた問題（間隔反復: 1日→3日→7日→14日、4回連続正解で卒業） ===
+//
+// データ形式（phy_quiz_wrong）:
+//   { "part1": { "11563": { "next": "2026-06-13", "streak": 0, "last": "2026-06-12" } } }
+//     next:   次回復習日（この日以降に復習モードで出題される）
+//     streak: 復習での連続正解数（SRS_GRADUATE 回で卒業＝リストから削除）
+//     last:   最後にこの問題の記録を更新した日
+//
+// 旧形式（IDの配列 { "part1": [11563, ...] }）は読み込み時に自動変換する。
 
-        // 新しいIDを追加（重複除去）
-        const existing = new Set(wrong[partId]);
-        newIds.forEach(id => existing.add(id));
-        wrong[partId] = Array.from(existing);
+const SRS_INTERVALS = [1, 3, 7, 14]; // streak 回正解後の次回までの日数
+const SRS_GRADUATE = 4;              // この回数連続正解で卒業
 
-        // パートあたり最大30件（古い方を削除）
-        if (wrong[partId].length > 30) {
-            wrong[partId] = wrong[partId].slice(-30);
+// ローカル日付の "YYYY-MM-DD"（学習日の区切りは端末のローカル時刻基準）
+function srsToday() {
+    const d = new Date();
+    return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+}
+
+function srsAddDays(days) {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+}
+
+// 旧形式（ID配列）を新形式へ変換する。新形式はそのまま返す
+function migrateWrongFormat(wrong) {
+    const result = {};
+    const today = srsToday();
+    Object.keys(wrong || {}).forEach(partId => {
+        const v = wrong[partId];
+        if (Array.isArray(v)) {
+            // 旧形式: すぐ復習できるよう next=今日 で変換
+            result[partId] = {};
+            v.forEach(id => {
+                result[partId][String(id)] = { next: today, streak: 0, last: null };
+            });
+        } else if (v && typeof v === 'object') {
+            result[partId] = v;
         }
+    });
+    return result;
+}
 
+function getWrongData() {
+    try {
+        const raw = JSON.parse(localStorage.getItem('phy_quiz_wrong') || '{}');
+        return migrateWrongFormat(raw);
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveWrongData(wrong) {
+    try {
+        // 空のパートを掃除してから保存
+        Object.keys(wrong).forEach(p => {
+            if (!wrong[p] || Object.keys(wrong[p]).length === 0) delete wrong[p];
+        });
         localStorage.setItem('phy_quiz_wrong', JSON.stringify(wrong));
     } catch (e) {
         console.warn('復習データの保存に失敗:', e);
     }
 }
 
-// 正解した問題は復習リストから除去
-function removeFromWrongQuestions(partId, questionId) {
-    try {
-        const wrong = JSON.parse(localStorage.getItem('phy_quiz_wrong') || '{}');
-        if (wrong[partId]) {
-            wrong[partId] = wrong[partId].filter(id => id !== questionId);
-            if (wrong[partId].length === 0) delete wrong[partId];
-            localStorage.setItem('phy_quiz_wrong', JSON.stringify(wrong));
-        }
-    } catch (e) {
-        console.warn('復習データの更新に失敗:', e);
+// 問題オブジェクトの category（例 "p1_c2"）から partId（"part1"）を得る
+function partIdFromQuestion(q) {
+    const m = (q && q.category || '').match(/^p(\d+)_/);
+    return m ? 'part' + m[1] : null;
+}
+
+// 間違えた → streak リセット、翌日に復習
+function markWrongQuestion(q) {
+    const partId = partIdFromQuestion(q);
+    if (!partId || !q.id) return;
+    const wrong = getWrongData();
+    if (!wrong[partId]) wrong[partId] = {};
+    wrong[partId][String(q.id)] = { next: srsAddDays(1), streak: 0, last: srsToday() };
+
+    // パートあたり最大30件（更新日が最も古いものから削除）
+    const ids = Object.keys(wrong[partId]);
+    if (ids.length > 30) {
+        ids.sort((a, b) => String(wrong[partId][a].last || '') < String(wrong[partId][b].last || '') ? -1 : 1);
+        ids.slice(0, ids.length - 30).forEach(id => delete wrong[partId][id]);
     }
+    saveWrongData(wrong);
+}
+
+// 復習日が来ている問題に正解 → 間隔を伸ばす。卒業したら削除。
+// 進捗があった場合 { streak, graduated } を返す（期日前の正解は進めず null）
+function advanceReviewQuestion(q) {
+    const partId = partIdFromQuestion(q);
+    if (!partId || !q.id) return null;
+    const wrong = getWrongData();
+    const entry = wrong[partId] && wrong[partId][String(q.id)];
+    if (!entry) return null;
+
+    const today = srsToday();
+    if (entry.next > today) return null; // まだ復習日が来ていない（早すぎる正解は定着扱いにしない）
+
+    entry.streak = (entry.streak || 0) + 1;
+    entry.last = today;
+
+    if (entry.streak >= SRS_GRADUATE) {
+        delete wrong[partId][String(q.id)]; // 卒業
+        saveWrongData(wrong);
+        return { streak: entry.streak, graduated: true };
+    }
+    entry.next = srsAddDays(SRS_INTERVALS[Math.min(entry.streak, SRS_INTERVALS.length - 1)]);
+    saveWrongData(wrong);
+    return { streak: entry.streak, graduated: false };
+}
+
+// 今日復習すべき問題（next <= 今日）をパート別に返す
+function getDueWrongQuestions() {
+    const wrong = getWrongData();
+    const today = srsToday();
+    const due = {};
+    let dueCount = 0, totalCount = 0;
+    Object.keys(wrong).forEach(partId => {
+        Object.keys(wrong[partId]).forEach(id => {
+            totalCount++;
+            if (wrong[partId][id].next <= today) {
+                if (!due[partId]) due[partId] = [];
+                due[partId].push(Number(id));
+                dueCount++;
+            }
+        });
+    });
+    return { due, dueCount, totalCount };
 }
 
 // Function to Randomly Select Questions with Unique Classification
